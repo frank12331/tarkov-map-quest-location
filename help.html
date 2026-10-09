@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="逃離塔科夫任務查詢工具的使用說明。">
+<title>塔科夫任務查詢 · 使用說明</title>
+<style>
+:root{
+  --ground:#13130E; --panel:#1C1B14; --line:#36342A; --line-soft:#2A2820;
+  --ink:#EAE5D5; --ink-2:#A79F87; --ink-3:#7A735F; --amber:#E3A63C; --amber-dim:#8A6B28; --bad:#C2584F;
+  --body:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+  --display:"Oswald","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  --mono:"JetBrains Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.75 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--amber)}
+.wrap{max-width:820px;margin:0 auto;padding:0 22px 60px}
+header{border-bottom:1px solid var(--line);background:repeating-linear-gradient(135deg,rgba(227,166,60,.055) 0 10px,transparent 10px 22px),var(--panel);padding:28px 0 22px;margin-bottom:28px}
+.eyebrow{font:600 11px var(--display);letter-spacing:.32em;color:var(--amber);margin:0 0 6px;text-transform:uppercase}
+h1{font:600 30px/1.2 var(--display);letter-spacing:.05em;margin:0}
+header p{margin:10px 0 0;color:var(--ink-2)}
+.back{display:inline-block;margin-top:14px;font-size:13px;text-decoration:none;border:1px solid var(--amber-dim);padding:5px 12px;border-radius:2px}
+h2{font:600 20px/1.3 var(--display);letter-spacing:.05em;margin:34px 0 12px}
+ol.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:10px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;background:var(--panel);border:1px solid var(--line-soft);padding:12px 14px}
+ol.steps>li::before{content:counter(s);font:600 15px/26px var(--display);text-align:center;width:26px;height:26px;border:1px solid var(--amber-dim);color:var(--amber);border-radius:50%}
+.steps p{margin:4px 0 0;color:var(--ink-2);font-size:14px}
+.steps ul{margin:6px 0 0;padding-left:18px;color:var(--ink-2);font-size:14px}
+kbd,code{font-family:var(--mono);font-size:13px;background:#0E0D0A;border:1px solid var(--line);padding:1px 6px;border-radius:2px;color:var(--ink)}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.legend div{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line-soft);padding:10px 12px;font-size:14px}
+.legend svg{flex:none}
+dl{margin:0;display:grid;gap:12px}
+dt{font-weight:700}
+dd{margin:2px 0 0;color:var(--ink-2);font-size:14px}
+footer{color:var(--ink-3);font-size:12.5px;border-top:1px solid var(--line-soft);padding-top:16px;margin-top:40px}
+[hidden]{display:none!important}
+html:lang(zh-Hans){--body:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;--display:"Oswald","Noto Sans SC","Microsoft YaHei",sans-serif}
+.lang{position:absolute;top:10px;right:14px;display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden;background:#100F0B;z-index:2}
+.lang button{font:600 11.5px/1 var(--body);padding:6px 9px;background:transparent;color:var(--ink-3);border:0;border-right:1px solid var(--line);cursor:pointer}
+.lang button:last-child{border-right:0}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--amber);color:#16140D}
+@media (max-width:600px){header{padding-top:46px}}
+</style>
+</head>
+<body>
+<div class="lang" id="lang" role="group" aria-label="語言 / 语言 / Language"><button type="button" data-lang="tw" lang="zh-Hant" aria-pressed="true">繁中</button><button type="button" data-lang="cn" lang="zh-Hans" aria-pressed="false">简中</button><button type="button" data-lang="en" lang="en" aria-pressed="false">EN</button></div>
+<div data-l="tw">
+<header>
+  <div class="wrap" style="padding-bottom:0">
+    <p class="eyebrow">Escape from Tarkov · 任務</p>
+    <h1>使用說明</h1>
+    <p>貼上任務名，就能看到目標、需要的鑰匙和物品，還有地圖上的位置。</p>
+    <a class="back" href="./">← 回查詢頁</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>查任務</h2>
+<ol class="steps">
+  <li><div><b>在右上角的框貼上任務名，按「查詢」</b>（或 <kbd>Ctrl</kbd>+<kbd>Enter</kbd>）
+    <ul>
+      <li>一行一個，或用逗號隔開都可以；前面的編號會自動忽略</li>
+      <li>繁體、簡體、英文都能查，名字不完整也行（例如打「大動作」或 <code>rooftops</code>）</li>
+      <li>想不起名字：展開「瀏覽全部任務」，可以先依地圖篩選，點一下就加入</li>
+    </ul></div></li>
+  <li><div><b>看結果列</b>
+    <p>出現紅色「找不到」時，後面通常有「是不是要找」的建議，點一下就會換成正確名稱。</p></div></li>
+  <li><div><b>看右側任務卡</b>
+    <ul>
+      <li>任務名下面的小字是英文名稱，方便玩英文版的人對照</li>
+      <li>點任務名稱會在新分頁開啟這個任務的攻略頁：中文模式開 eftarkov.com，英文模式開 Escape from Tarkov Fandom Wiki</li>
+      <li><b>目標</b>：要做的事</li>
+      <li><b>需要</b>：🔑 鑰匙（虛線框是可選）、要帶或要上交的物品</li>
+      <li><b>位置</b>：每個地點的說明和截圖，點縮圖可以放大</li>
+      <li><b>提示</b>：注意事項</li>
+    </ul></div></li>
+  <li><div><b>點「定位 ▸」</b>
+    <p>地圖會自動切到正確的地圖和樓層，並拉近到那個位置。</p></div></li>
+  <li><div><b>出發前看頁面最下方的「鑰匙清單」</b>
+    <p>使用次數是紅色 1 的鑰匙只能用一次。</p></div></li>
+</ol>
+
+<h2>地圖記號</h2>
+<div class="legend">
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><circle r="9" fill="#A79F87"/></svg>要去的地點</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><circle r="7.5" fill="#14130E" stroke="#A79F87" stroke-width="3"/></svg>物品擇一刷新</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-9" y="-9" width="18" height="18" rx="3" fill="#12110C" stroke="#E3A63C" stroke-width="1.8"/><path d="M-3.4 -1.4 A3.4 3.4 0 0 1 3.4 -1.4" fill="none" stroke="#E3A63C" stroke-width="1.8"/><rect x="-4.6" y="-1.4" width="9.2" height="6.4" rx="1" fill="#E3A63C"/></svg>需要鑰匙的門</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-8" y="-8" width="16" height="16" rx="4" fill="#2FCB8B" stroke="#0E0E0A" stroke-width="1.2"/><path d="M-4 0 H4 M1 -3 L4 0 L1 3" fill="none" stroke="#0E0E0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>撤離點（綠＝PMC、橙＝Scav、紅＝轉移點；綠底橙框＝共用）</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-7" y="-7" width="14" height="14" transform="rotate(45)" fill="#12110C" stroke="#E3A63C" stroke-width="1.8"/><circle cx="-2" cy="0" r="2.2" fill="none" stroke="#E3A63C" stroke-width="1.5"/><path d="M0.2 0 H4.4" stroke="#E3A63C" stroke-width="1.5"/></svg>鑰匙刷新點</div>
+</div>
+<p style="color:var(--ink-2);font-size:14px">圓圈裡的數字是任務在清單上的編號，顏色代表商人。別的樓層的標點會變淡，旁邊標著樓層。</p>
+
+<h2>地圖操作</h2>
+<ol class="steps">
+  <li><div><b>地圖按鈕</b>切換地圖。按鈕上的數字是查詢中有幾個任務在那張圖上有標點</div></li>
+  <li><div><b>拖曳</b>平移，<b>滾輪</b>縮放（手機用兩指）</div></li>
+  <li><div><b>樓層按鈕</b>切換樓層；<kbd>Alt</kbd>+滾輪也可以換層。按鈕右上有小圓點的，代表那層有標點</div></li>
+  <li><div><b>撤離點</b>開關可以顯示／隱藏撤離點，旁邊可以分別選 PMC、Scav、轉移點（預設不顯示 Scav）。點撤離點會在左下角顯示名稱和條件，例如要打信號棒、要付錢、要鑰匙卡。拉近時會顯示名稱</div></li>
+  <li><div><b>BTR</b> 開關（只在森林、燈塔、街區出現，預設關）可以顯示 BTR 停靠站和路線，兩者可分開開關。點停靠站會列出經過的路線，點路線會顯示停靠順序。路線來自 eftarkov.com 的 BTR 追蹤頁</div></li>
+  <li><div><b>只看需鑰匙</b>、<b>商人</b>按鈕可以篩選；「重設」回到整張地圖</div></li>
+</ol>
+
+<h2>語言</h2>
+<p style="color:var(--ink-2);font-size:14px">右上角可以切換 繁中／简中／EN。第一次打開會依瀏覽器的語言自動選，之後會記住你選的。</p>
+<p style="color:var(--ink-2);font-size:14px">英文模式下，任務名、任務目標、地圖和撤離點名稱用遊戲官方的英文；攻略說明是從中文翻成英文的，用詞可能和遊戲略有不同。鑰匙、物品名稱也是英文。不管選哪個語言，搜尋都可以打繁體、簡體或英文。</p>
+
+<h2>常見問題</h2>
+<dl>
+  <dt>某個任務在地圖上沒有標點？</dt>
+  <dd>擊殺、存活這類不限地點的任務，原站本來就沒有標點，只會顯示目標和說明。</dd>
+  <dt>內容和遊戲裡不一樣？</dt>
+  <dd>資料不是即時同步的，以遊戲內為準。點任務卡右上的「原站 ↗」可以看最新版本。</dd>
+  <dt>上次查的任務還在？</dt>
+  <dd>會記住上次的查詢（存在你自己的瀏覽器裡），按「清空」就會清掉。</dd>
+</dl>
+
+<footer>來源：任務內容、攻略截圖、地圖與 BTR 路線取自 <a href="https://www.eftarkov.com/" target="_blank" rel="noopener">eftarkov.com</a>（逃離塔科夫中文 Wiki，已獲授權使用），感謝原站整理；以 OpenCC 轉為繁體。英文任務目標、物品與撤離點名稱取自 <a href="https://escapefromtarkov.fandom.com/" target="_blank" rel="noopener">Escape from Tarkov Fandom Wiki</a>（<a href="https://www.fandom.com/licensing" target="_blank" rel="noopener">CC BY-NC-SA</a>）；英文任務名稱與部分目標取自 <a href="https://tarkov.dev/" target="_blank" rel="noopener">tarkov.dev</a>。攻略說明的英文版由 AI 翻譯，可能和遊戲用詞略有不同。Escape from Tarkov 為 Battlestate Games 的商標，本站為非官方玩家工具。</footer>
+</div>
+</div>
+<div data-l="cn" lang="zh-Hans" hidden>
+<header>
+  <div class="wrap" style="padding-bottom:0">
+    <p class="eyebrow">Escape from Tarkov · 任务</p>
+    <h1>使用说明</h1>
+    <p>粘贴任务名，就能看到目标、需要的钥匙和物品，还有地图上的位置。</p>
+    <a class="back" href="./">← 回查询页</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>查任务</h2>
+<ol class="steps">
+  <li><div><b>在右上角的框粘贴任务名，按“查询”</b>（或 <kbd>Ctrl</kbd>+<kbd>Enter</kbd>）
+    <ul>
+      <li>一行一个，或用逗号隔开都可以；前面的编号会自动忽略</li>
+      <li>繁体、简体、英文都能查，名字不完整也行（例如打“大动作”或 <code>rooftops</code>）</li>
+      <li>想不起名字：展开“浏览全部任务”，可以先按地图筛选，点一下就加入</li>
+    </ul></div></li>
+  <li><div><b>看结果列</b>
+    <p>出现红色“找不到”时，后面通常有“是不是要找”的建议，点一下就会换成正确名称。</p></div></li>
+  <li><div><b>看右侧任务卡</b>
+    <ul>
+      <li>任务名下面的小字是英文名称，方便玩英文版的人对照</li>
+      <li>点任务名称会在新标签页打开这个任务的攻略页：中文模式开 eftarkov.com，英文模式开 Escape from Tarkov Fandom Wiki</li>
+      <li><b>目标</b>：要做的事</li>
+      <li><b>需要</b>：🔑 钥匙（虚线框是可选）、要带或要上交的物品</li>
+      <li><b>位置</b>：每个地点的说明和截图，点缩略图可以放大</li>
+      <li><b>提示</b>：注意事项</li>
+    </ul></div></li>
+  <li><div><b>点“定位 ▸”</b>
+    <p>地图会自动切到正确的地图和楼层，并拉近到那个位置。</p></div></li>
+  <li><div><b>出发前看页面最下方的“钥匙清单”</b>
+    <p>使用次数是红色 1 的钥匙只能用一次。</p></div></li>
+</ol>
+
+<h2>地图记号</h2>
+<div class="legend">
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><circle r="9" fill="#A79F87"/></svg>要去的地点</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><circle r="7.5" fill="#14130E" stroke="#A79F87" stroke-width="3"/></svg>物品择一刷新</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-9" y="-9" width="18" height="18" rx="3" fill="#12110C" stroke="#E3A63C" stroke-width="1.8"/><path d="M-3.4 -1.4 A3.4 3.4 0 0 1 3.4 -1.4" fill="none" stroke="#E3A63C" stroke-width="1.8"/><rect x="-4.6" y="-1.4" width="9.2" height="6.4" rx="1" fill="#E3A63C"/></svg>需要钥匙的门</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-8" y="-8" width="16" height="16" rx="4" fill="#2FCB8B" stroke="#0E0E0A" stroke-width="1.2"/><path d="M-4 0 H4 M1 -3 L4 0 L1 3" fill="none" stroke="#0E0E0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>撤离点（绿＝PMC、橙＝Scav、红＝转移点；绿底橙框＝共用）</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-7" y="-7" width="14" height="14" transform="rotate(45)" fill="#12110C" stroke="#E3A63C" stroke-width="1.8"/><circle cx="-2" cy="0" r="2.2" fill="none" stroke="#E3A63C" stroke-width="1.5"/><path d="M0.2 0 H4.4" stroke="#E3A63C" stroke-width="1.5"/></svg>钥匙刷新点</div>
+</div>
+<p style="color:var(--ink-2);font-size:14px">圆圈里的数字是任务在清单上的编号，颜色代表商人。别的楼层的标点会变淡，旁边标着楼层。</p>
+
+<h2>地图操作</h2>
+<ol class="steps">
+  <li><div><b>地图按钮</b>切换地图。按钮上的数字是查询中有几个任务在那张图上有标点</div></li>
+  <li><div><b>拖拽</b>平移，<b>滚轮</b>缩放（手机用两指）</div></li>
+  <li><div><b>楼层按钮</b>切换楼层；<kbd>Alt</kbd>+滚轮也可以换层。按钮右上有小圆点的，代表那层有标点</div></li>
+  <li><div><b>撤离点</b>开关可以显示／隐藏撤离点，旁边可以分别选 PMC、Scav、转移点（默认不显示 Scav）。点撤离点会在左下角显示名称和条件，例如要打信号棒、要付钱、要钥匙卡。拉近时会显示名称</div></li>
+  <li><div><b>BTR</b> 开关（只在森林、灯塔、街区出现，默认关）可以显示 BTR 停靠站和路线，两者可分开开关。点停靠站会列出经过的路线，点路线会显示停靠顺序。路线来自 eftarkov.com 的 BTR 追踪页</div></li>
+  <li><div><b>只看需钥匙</b>、<b>商人</b>按钮可以筛选；“重置”回到整张地图</div></li>
+</ol>
+
+<h2>语言</h2>
+<p style="color:var(--ink-2);font-size:14px">右上角可以切换 繁中／简中／EN。第一次打开会根据浏览器的语言自动选，之后会记住你选的。</p>
+<p style="color:var(--ink-2);font-size:14px">英文模式下，任务名、任务目标、地图和撤离点名称用游戏官方的英文；攻略说明是从中文翻成英文的，用词可能和游戏略有不同。钥匙、物品名称也是英文。不管选哪个语言，搜索都可以打繁体、简体或英文。</p>
+
+<h2>常见问题</h2>
+<dl>
+  <dt>某个任务在地图上没有标点？</dt>
+  <dd>击杀、存活这类不限地点的任务，原站本来就没有标点，只会显示目标和说明。</dd>
+  <dt>内容和游戏里不一样？</dt>
+  <dd>数据不是实时同步的，以游戏内为准。点任务卡右上的“原站 ↗”可以看最新版本。</dd>
+  <dt>上次查的任务还在？</dt>
+  <dd>会记住上次的查询（存在你自己的浏览器里），按“清空”就会清掉。</dd>
+</dl>
+
+<footer>来源：任务内容、攻略截图、地图与 BTR 路线取自 <a href="https://www.eftarkov.com/" target="_blank" rel="noopener">eftarkov.com</a>（逃离塔科夫中文 Wiki，已获授权使用），感谢原站整理。英文任务目标、物品与撤离点名称取自 <a href="https://escapefromtarkov.fandom.com/" target="_blank" rel="noopener">Escape from Tarkov Fandom Wiki</a>（<a href="https://www.fandom.com/licensing" target="_blank" rel="noopener">CC BY-NC-SA</a>）；英文任务名称与部分目标取自 <a href="https://tarkov.dev/" target="_blank" rel="noopener">tarkov.dev</a>。攻略说明的英文版由 AI 翻译，可能和游戏用词略有不同。Escape from Tarkov 为 Battlestate Games 的商标，本站为非官方玩家工具。</footer>
+</div>
+</div>
+<div data-l="en" lang="en" hidden>
+<header>
+  <div class="wrap" style="padding-bottom:0">
+    <p class="eyebrow">Escape from Tarkov · Quests</p>
+    <h1>How to use</h1>
+    <p>Paste quest names to see objectives, required keys and items, and where to go on the map.</p>
+    <a class="back" href="./">← Back to search</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>Look up quests</h2>
+<ol class="steps">
+  <li><div><b>Paste quest names into the search box and click “Search”</b> (or <kbd>Ctrl</kbd>+<kbd>Enter</kbd>)
+    <ul>
+      <li>One per line or comma-separated; leading numbers are ignored</li>
+      <li>English, Traditional or Simplified Chinese all work, and partial names are fine (e.g. <code>rooftops</code>; case doesn't matter)</li>
+      <li>Can't remember a name? Open “Browse all quests”, filter by map, and click a quest to add it</li>
+    </ul></div></li>
+  <li><div><b>Check the result line</b>
+    <p>A red “Not found” usually comes with a “did you mean” suggestion. Click it to use the right name.</p></div></li>
+  <li><div><b>Read the quest cards</b>
+    <ul>
+      <li>The small text under the quest name is its Chinese name</li>
+      <li><b>Goal</b>: what you need to do</li>
+      <li><b>Need</b>: 🔑 keys (dashed border = optional) and items to bring or hand in</li>
+      <li><b>Where</b>: notes and screenshots for each location. Click a thumbnail to enlarge it</li>
+      <li><b>Tips</b>: things to watch out for</li>
+    </ul></div></li>
+  <li><div><b>Click “Locate ▸”</b>
+    <p>The page switches to the right map and floor and zooms in on the spot.</p></div></li>
+  <li><div><b>Before heading out, check “Keys” at the bottom of the page</b>
+    <p>A key with a red 1 under Uses can only be used once.</p></div></li>
+</ol>
+
+<h2>Map symbols</h2>
+<div class="legend">
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><circle r="9" fill="#A79F87"/></svg>Objective</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><circle r="7.5" fill="#14130E" stroke="#A79F87" stroke-width="3"/></svg>Item spawns here (one of these)</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-9" y="-9" width="18" height="18" rx="3" fill="#12110C" stroke="#E3A63C" stroke-width="1.8"/><path d="M-3.4 -1.4 A3.4 3.4 0 0 1 3.4 -1.4" fill="none" stroke="#E3A63C" stroke-width="1.8"/><rect x="-4.6" y="-1.4" width="9.2" height="6.4" rx="1" fill="#E3A63C"/></svg>Locked door</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-8" y="-8" width="16" height="16" rx="4" fill="#2FCB8B" stroke="#0E0E0A" stroke-width="1.2"/><path d="M-4 0 H4 M1 -3 L4 0 L1 3" fill="none" stroke="#0E0E0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Extract (green = PMC, orange = Scav, red = transit; green with orange border = shared)</div>
+  <div><svg width="22" height="22" viewBox="-11 -11 22 22"><rect x="-7" y="-7" width="14" height="14" transform="rotate(45)" fill="#12110C" stroke="#E3A63C" stroke-width="1.8"/><circle cx="-2" cy="0" r="2.2" fill="none" stroke="#E3A63C" stroke-width="1.5"/><path d="M0.2 0 H4.4" stroke="#E3A63C" stroke-width="1.5"/></svg>Key spawn</div>
+</div>
+<p style="color:var(--ink-2);font-size:14px">The number in a circle is the quest's position in the list, and its color shows the trader. Pins on other floors are faded and labeled with their floor.</p>
+
+<h2>Map controls</h2>
+<ol class="steps">
+  <li><div><b>Map buttons</b> switch maps. The number on a button is how many searched quests have pins on that map</div></li>
+  <li><div><b>Drag</b> to pan, <b>scroll</b> to zoom (two fingers on a phone)</div></li>
+  <li><div><b>Floor buttons</b> switch floors; <kbd>Alt</kbd>+scroll works too. A small dot on a button means that floor has pins</div></li>
+  <li><div><b>Extracts</b> shows or hides extract markers. Next to it you can pick PMC, Scav and transits (Scav is off by default). Click an extract to see its name and requirements in the bottom-left corner, such as a flare, a payment or a keycard. Names appear when you zoom in</div></li>
+  <li><div><b>BTR</b> (only on Woods, Lighthouse and Streets; off by default) shows BTR stops and routes, which you can toggle separately. Click a stop to see which routes pass it, or a route to see its stops in order. Routes come from the BTR tracker on eftarkov.com</div></li>
+  <li><div><b>Keys only</b> and the <b>trader</b> buttons filter what's shown; “Reset” zooms back out to the whole map</div></li>
+</ol>
+
+<h2>Language</h2>
+<p style="color:var(--ink-2);font-size:14px">Switch between 繁中, 简中 and EN at the top right. The first time you open the page, it picks a language from your browser settings, then remembers your choice.</p>
+<p style="color:var(--ink-2);font-size:14px">In English mode, quest names, objectives, map names and extract names use the official English text. Guide notes are translated from the Chinese source, so the wording may differ from the game. Key and item names are in English too. In any language, you can search in English, Traditional or Simplified Chinese.</p>
+
+<h2>FAQ</h2>
+<dl>
+  <dt>A quest has no pins on the map?</dt>
+  <dd>Quests that aren't tied to a place, such as kill or survive quests, have no pins on the source site either. You only get the objectives and notes.</dd>
+  <dt>Something doesn't match the game?</dt>
+  <dd>The data isn't live, so trust the game. Click “Source ↗” at the top right of a quest card for the latest version.</dd>
+  <dt>My last search is still there?</dt>
+  <dd>The page remembers your last search (stored only in your own browser). Click “Clear” to remove it.</dd>
+</dl>
+
+<footer>Sources: quest content, guide screenshots, maps and BTR routes come from <a href="https://www.eftarkov.com/" target="_blank" rel="noopener">eftarkov.com</a> (a Chinese Escape from Tarkov wiki, used with permission). Thanks to its editors. English objectives, item and extract names come from the <a href="https://escapefromtarkov.fandom.com/" target="_blank" rel="noopener">Escape from Tarkov Fandom Wiki</a> (<a href="https://www.fandom.com/licensing" target="_blank" rel="noopener">CC BY-NC-SA</a>); English quest names and some objectives come from <a href="https://tarkov.dev/" target="_blank" rel="noopener">tarkov.dev</a>. English guide notes are AI-translated from Chinese and may differ slightly from in-game wording. Escape from Tarkov is a trademark of Battlestate Games; this is an unofficial fan tool.</footer>
+</div>
+</div>
+<script>
+(function(){
+// 和查詢頁共用 tarkov.lang：沒選過就依瀏覽器的第一個語言（繁體→繁中、簡體→簡中、其他→英文）
+const st={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const TITLE={tw:"塔科夫任務查詢 · 使用說明",cn:"塔科夫任务查询 · 使用说明",en:"Tarkov Quest Lookup · Help"};
+const HL={tw:"zh-Hant",cn:"zh-Hans",en:"en"};
+function detect(){
+  const s=st.get("tarkov.lang"); if(s&&TITLE[s]) return s;
+  const l=String((navigator.languages&&navigator.languages[0])||navigator.language||"").toLowerCase();
+  if(!l.startsWith("zh")) return "en";
+  return /hans|-cn|-sg|-my/.test(l)&&!/hant/.test(l)?"cn":"tw";
+}
+function apply(l){
+  document.documentElement.lang=HL[l]; document.title=TITLE[l];
+  document.querySelectorAll("[data-l]").forEach(d=>{d.hidden=d.dataset.l!==l;});
+  document.querySelectorAll("#lang [data-lang]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===l)));
+}
+document.getElementById("lang").addEventListener("click",e=>{
+  const b=e.target.closest("[data-lang]"); if(!b) return;
+  st.set("tarkov.lang",b.dataset.lang); apply(b.dataset.lang);
+});
+apply(detect());
+})();
+</script>
+</body>
+</html>

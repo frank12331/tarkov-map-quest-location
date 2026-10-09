@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://frank12331.github.io/tarkov-map-quest-location/sitemap.xml
