@@ -1,0 +1,1689 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="逃離塔科夫（Escape from Tarkov）任務查詢：貼上任務名，整理出目標、需要的鑰匙與物品、各地圖上的位置標點和攻略截圖。支援繁中、簡中、英文，含劇情線。">
+<title>塔科夫任務查詢</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ground:#13130E; --panel:#1C1B14; --panel-2:#23221A; --line:#36342A; --line-soft:#2A2820;
+  --ink:#EAE5D5; --ink-2:#A79F87; --ink-3:#7A735F; --amber:#E3A63C; --amber-dim:#8A6B28; --rule:#4A4636;
+  --mapbg:#1A1A16; --bad:#C2584F;
+  --ex-pmc:#2FCB8B; --ex-scav:#E39A2B; --ex-transit:#E2563A; --btr:#B58BE0;
+  --t-prapor:#B08D3F; --t-therapist:#4F9490; --t-skier:#C06A3A; --t-mechanic:#5D82B0;
+  --t-ragman:#B0596A; --t-jaeger:#71944B; --t-fence:#8C8C8C; --t-peacekeeper:#5E9AC2;
+  --t-lightkeeper:#C9B458; --t-story:#C27BB4; --t-other:#9A8F7A;
+  --display:"Oswald","Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;
+  --body:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+  --mono:"JetBrains Mono",Consolas,"SFMono-Regular",monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.65;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+/* ---------- masthead + search ---------- */
+.masthead{border-bottom:1px solid var(--line);background:repeating-linear-gradient(135deg,rgba(227,166,60,.055) 0 10px,transparent 10px 22px),var(--panel);padding:20px 26px 18px}
+.mh{max-width:1560px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,560px);gap:18px 34px;align-items:start}
+@media (max-width:960px){.mh{grid-template-columns:minmax(0,1fr)}}
+.eyebrow{font-family:var(--display);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--amber);margin:0 0 6px}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(26px,3.2vw,34px);letter-spacing:.06em;margin:0;line-height:1.15}
+.mh__sub{margin:8px 0 0;color:var(--ink-2);font-size:13px;max-width:60ch}
+.mh__meta{margin:10px 0 0;color:var(--ink-3);font:12px var(--mono)}
+.search{display:grid;gap:8px}
+.search label{font-family:var(--display);font-size:11px;letter-spacing:.2em;color:var(--ink-3)}
+.search textarea{width:100%;min-height:96px;resize:vertical;background:#100F0B;color:var(--ink);border:1px solid var(--line);border-radius:2px;padding:10px 12px;font:13.5px/1.6 var(--body)}
+.search textarea:focus{border-color:var(--amber-dim);outline:none}
+.search__row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:500 13px/1 var(--body);padding:9px 14px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--ink-2);cursor:pointer}
+.btn:hover{color:var(--ink);border-color:var(--rule)}
+.btn--go{background:var(--amber);border-color:var(--amber);color:#16140D;font-weight:700}
+.btn--go:hover{background:#EDB552;color:#16140D}
+.search__hint{color:var(--ink-3);font-size:12px;margin-left:auto}
+.result{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}
+.result span{padding:2px 8px;border-radius:2px;border:1px solid var(--line)}
+.result .is-miss{color:var(--bad);border-color:var(--bad)}
+.result .is-multi{color:var(--amber);border-color:var(--amber-dim)}
+.result .is-busy{color:var(--ink-2)}
+.search textarea.is-drop{border-color:var(--amber)}
+/* 隊友分頁：每個隊友一份任務清單，查詢時合併 */
+.tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid var(--line);margin-bottom:-8px}
+.tab{font:500 12.5px/1 var(--body);padding:8px 12px;border:1px solid transparent;border-bottom:0;border-radius:2px 2px 0 0;background:none;color:var(--ink-3);cursor:pointer;margin-bottom:-1px;display:inline-flex;gap:6px;align-items:center}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:#100F0B;color:var(--amber);border-color:var(--line);border-bottom:1px solid #100F0B}
+.tab small{font:600 10px/1 var(--mono);color:#16140D;background:var(--ink-3);padding:2px 4px;border-radius:2px}
+.tab[aria-selected="true"] small{background:var(--amber)}
+.tabs + textarea{border-top-color:transparent}
+.tab__ed{font-size:11px;color:var(--ink-3);padding:0 2px;margin-left:-2px}
+.tab__ed:hover{color:var(--amber)}
+.tab--edit{width:9em;cursor:text;background:#100F0B;color:var(--amber);border-color:var(--amber-dim);outline:none}
+.q__who{font:600 11px/1 var(--mono);padding:3px 6px;border:1px solid var(--amber-dim);color:var(--amber);border-radius:2px;letter-spacing:.04em}
+.sug{font:inherit;color:var(--ink);background:none;border:0;border-bottom:1px dashed var(--ink-2);padding:0 1px;cursor:pointer}
+.sug:hover{color:var(--amber);border-color:var(--amber)}
+
+/* browse drawer */
+.browse{max-width:1560px;margin:0 auto;padding:0 26px}
+.browse details{border:1px solid var(--line);border-top:none;background:var(--panel)}
+.browse summary{cursor:pointer;padding:9px 14px;font-size:12.5px;color:var(--ink-2);list-style:none}
+.browse summary::-webkit-details-marker{display:none}
+.browse summary::before{content:"▸ ";color:var(--ink-3)}
+.browse details[open] summary::before{content:"▾ "}
+.browse__body{padding:4px 14px 14px;display:grid;gap:10px}
+.bgroup{display:grid;grid-template-columns:100px minmax(0,1fr);gap:10px;align-items:start}
+.bgroup__t{font-family:var(--display);font-size:12px;letter-spacing:.08em;padding-top:4px}
+.bgroup__list{display:flex;flex-wrap:wrap;gap:5px}
+.bq{font:12px/1 var(--body);padding:5px 8px;border:1px solid var(--line-soft);border-radius:2px;background:transparent;color:var(--ink-2);cursor:pointer}
+.bq:hover{color:var(--ink);border-color:var(--rule)}
+.bq.is-in{color:#16140D;background:var(--ink-2);border-color:var(--ink-2)}
+.bq.is-nomap::after{content:" ·";color:var(--ink-3)}
+
+/* ---------- board ---------- */
+.board{max-width:1560px;margin:0 auto;padding:20px 26px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,470px);gap:26px;align-items:start}
+@media (max-width:1080px){.board{grid-template-columns:minmax(0,1fr)}}
+.mapcol{position:sticky;top:14px}
+@media (max-width:1080px){.mapcol{position:static}}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:9px 12px;border:1px solid var(--line);border-bottom:none;background:var(--panel)}
+.toolbar + .toolbar{border-top:1px solid var(--line-soft)}
+.tl{font-family:var(--display);font-size:10.5px;letter-spacing:.18em;color:var(--ink-3)}
+.sep{flex:1 1 auto}
+.chip{font:500 12px/1 var(--body);display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--ink-2);cursor:pointer}
+.chip:hover{color:var(--ink);border-color:var(--rule)}
+.chip[aria-pressed="true"]{background:var(--panel-2);color:var(--ink);border-color:var(--rule)}
+.chip[data-trader][aria-pressed="false"]{opacity:.42}
+.chip__dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+.chip--key[aria-pressed="true"]{border-color:var(--amber-dim);color:var(--amber)}
+.floors{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.floor{font:600 12px/1 var(--mono);padding:7px 10px;background:transparent;color:var(--ink-2);border:0;border-right:1px solid var(--line);cursor:pointer;position:relative}
+.floor:last-child{border-right:0}
+.floor:hover{color:var(--ink)}
+.floor[aria-pressed="true"]{background:var(--amber);color:#16140D}
+.floor__dot{position:absolute;top:3px;right:3px;width:4px;height:4px;border-radius:50%;background:var(--amber)}
+.floor[aria-pressed="true"] .floor__dot{background:#16140D}
+.zb{font:600 14px/1 var(--mono);min-width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--line);background:transparent;color:var(--ink-2);cursor:pointer;border-radius:2px;padding:0 9px}
+.zb:hover{color:var(--ink);border-color:var(--rule)}
+.zb--w{font:500 12px var(--body)}
+.viewport{position:relative;overflow:hidden;border:1px solid var(--line);background:var(--mapbg);height:min(78vh,900px);cursor:grab;touch-action:none}
+.viewport.is-drag{cursor:grabbing}
+.stage{position:absolute;top:0;left:0;transform-origin:0 0}
+.stage.is-moving{will-change:transform}
+.stage img{display:block;width:100%;height:auto;user-select:none}
+.stage svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.floorbadge{position:absolute;left:12px;top:12px;font:600 12px/1 var(--mono);padding:6px 9px;background:rgba(19,19,14,.86);border:1px solid var(--line);color:var(--amber);pointer-events:none}
+.empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink-3);font-size:13px;pointer-events:none;text-align:center;padding:20px}
+.pin{cursor:pointer}
+.pin__disc{stroke:#0E0E0A;stroke-width:2}
+.pin__hollow{fill:#14130E;stroke-width:3}
+.pin__ring{fill:none;stroke:var(--amber);stroke-width:2.2;opacity:0}
+.pin.is-on .pin__ring{opacity:1}
+.pin__label{font-family:var(--display);font-weight:600;font-size:11px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.pin__label--solid{fill:#12110C}
+.pin__ftag{font:600 8.5px var(--mono);fill:var(--ink);paint-order:stroke;stroke:#0E0E0A;stroke-width:3px;pointer-events:none}
+.pin.is-off{opacity:.36}
+.pin.is-off.is-on{opacity:.8}
+.pin.is-hid,.km.is-hid{display:none}
+.km{pointer-events:none}
+.km__bg{fill:#12110C;stroke:var(--amber);stroke-width:1.6}
+.km__art{fill:none;stroke:var(--amber);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.km__body{fill:var(--amber)}
+.km.is-off{opacity:.33}
+.maphint{border:1px solid var(--line);border-top:none;background:var(--panel);padding:8px 12px;font-size:11.5px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.maphint b{color:var(--ink-2);font-weight:500}
+.lg{display:inline-flex;align-items:center;gap:6px}
+
+/* ---------- cards ---------- */
+.listcol{display:grid;gap:10px;min-width:0}
+.listhead{font-family:var(--display);font-size:11px;letter-spacing:.24em;color:var(--ink-3);margin:0}
+/* 攜入／攜出清單、只看當前地圖 */
+.listbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.listbar .listhead{flex:1 1 auto}
+.chip--here[aria-pressed="true"]{border-color:var(--amber-dim);color:var(--amber)}
+.q__any{display:none;font-size:10.5px;padding:2px 7px;border:1px dashed var(--line);color:var(--ink-3);border-radius:2px}
+.listcol.is-here .q.is-any{order:1}
+.listcol.is-here .q.is-any .q__any{display:inline}
+.q.is-away{display:none}
+.carry{border:1px solid var(--line-soft);background:var(--panel)}
+.carry>summary{list-style:none;cursor:pointer;padding:9px 13px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.carry>summary::-webkit-details-marker{display:none}
+.carry>summary::before{content:"▸";color:var(--ink-3)}
+.carry[open]>summary::before{content:"▾"}
+.carry__t{font-family:var(--display);font-size:11px;letter-spacing:.24em;color:var(--ink-2)}
+.carry__s{font-size:11.5px;color:var(--ink-3)}
+.carry__list{list-style:none;margin:0;padding:0 13px 10px;columns:230px;column-gap:8px}
+.carry__list>li{break-inside:avoid;margin-bottom:6px}
+.ci{display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap;padding:5px 8px;border:1px solid var(--line-soft);font-size:13px}
+.ci img{width:24px;height:24px;object-fit:contain}
+.ci__ph{width:24px;height:24px;flex:none}
+.ci__box{flex:none;width:16px;height:16px;padding:0;border:1.5px solid var(--ink-3);border-radius:2px;background:none;cursor:pointer;position:relative}
+.ci__box:hover{border-color:var(--ex-pmc)}
+.ci.is-done .ci__box{background:var(--ex-pmc);border-color:var(--ex-pmc)}
+.ci.is-done .ci__box::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #0E0E0A;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ci__n{font-weight:500}
+.ci__x{font:600 11.5px var(--mono);color:var(--ink-2)}
+.ci.is-done .ci__n{color:var(--ink-3);text-decoration:line-through}
+.ci.is-done img{opacity:.45}
+.ci__qs{flex-basis:100%;padding-left:24px;display:flex;flex-wrap:wrap;gap:2px 10px;font-size:11.5px}
+.ci__q{font:inherit;background:none;border:0;padding:0;color:var(--ink-3);cursor:pointer;text-align:left}
+.ci__q:hover{color:var(--amber);text-decoration:underline}
+.ci__m{font-size:11px;color:var(--ink-3)}
+.carry__clr{margin:2px 0}
+.q{border:1px solid var(--line-soft);border-left:3px solid var(--trader);background:var(--panel);padding:13px 15px 14px;scroll-margin-top:14px}
+.q.is-on{background:var(--panel-2);border-color:var(--rule);border-left-color:var(--trader)}
+.q.is-hidden{display:none}
+.q__top{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.q__num{font-family:var(--display);font-size:13px;font-weight:600;color:var(--trader);min-width:18px;font-variant-numeric:tabular-nums}
+.q__name{font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:.03em;margin:0;flex:1 1 auto;min-width:0}
+.q__name a{color:inherit;text-decoration:none}
+.q__name a:hover,.q__name a:focus-visible{color:var(--amber);text-decoration:underline;text-underline-offset:3px}
+.q__trader{font-size:11px;letter-spacing:.1em;color:var(--trader);font-family:var(--display)}
+.q__lock{font-size:10.5px;padding:2px 7px;border:1px solid var(--amber-dim);color:var(--amber);border-radius:2px}
+.q__src{font-size:11px;color:var(--ink-3);text-decoration:none}
+.q__done{font:600 11px/1 var(--body);padding:4px 8px;border:1px solid var(--line);border-radius:2px;background:none;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.q__done:hover,.q__done:focus-visible{background:var(--ex-pmc);border-color:var(--ex-pmc);color:#0E0E0A}
+.q__src:hover{color:var(--amber)}
+.q__query{font-size:11px;color:var(--ink-3)}
+.q__body{margin:10px 0 0;display:grid;gap:10px}
+.row{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:start}
+.k{font-family:var(--display);font-size:10.5px;letter-spacing:.14em;color:var(--ink-3);padding-top:3px}
+.v{margin:0;font-size:13px;min-width:0}
+.v ul{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.v li{padding-left:13px;position:relative}
+.v li::before{content:"";position:absolute;left:0;top:.72em;width:5px;height:1px;background:var(--rule)}
+.need{display:flex;flex-wrap:wrap;gap:6px}
+.need span{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 8px 2px 4px;border:1px solid var(--line);border-radius:2px;color:var(--ink-2)}
+.need img{width:22px;height:22px;object-fit:contain}
+.need .is-key{border-color:var(--amber-dim);color:var(--amber)}
+.need .is-opt{border-style:dashed}
+.need .is-hand{border-color:var(--t-skier);color:var(--t-skier)}
+.need small{color:var(--ink-3);font-size:10.5px}
+.spots{display:grid;gap:8px}
+.goals{gap:2px!important}
+.goal{display:flex;align-items:flex-start;gap:8px;width:100%;padding:2px 4px;margin:0 -4px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:2px}
+.goal:hover{background:var(--panel-2)}
+.goal__box{flex:none;width:13px;height:13px;margin-top:.32em;border:1.5px solid var(--ink-3);border-radius:2px;position:relative}
+.goal:hover .goal__box{border-color:var(--ex-pmc)}
+.goal.is-done .goal__box{background:var(--ex-pmc);border-color:var(--ex-pmc)}
+.goal.is-done .goal__box::after{content:"";position:absolute;left:3.5px;top:0.5px;width:3px;height:7px;border:solid #0E0E0A;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.goal.is-done .goal__t{color:var(--ink-3);text-decoration:line-through}
+.spot.is-done{opacity:.5}
+.spot.is-locked{opacity:.38;filter:grayscale(1)}
+.ftag--lock{color:var(--ink-3)!important;font-family:var(--body);font-weight:400}
+.goal.is-locked{cursor:default;color:var(--ink-3)}
+.goal.is-locked:hover{background:none}
+.goal.is-locked .goal__box{border-style:dashed;border-color:var(--line)}
+.gstage{display:grid;gap:2px}
+.gstage+.gstage{margin-top:8px}
+.gstage__h{font:600 10.5px/1.4 var(--display);letter-spacing:.08em;color:var(--trader)}
+.gstage--lock .gstage__h,.gstage--done .gstage__h{color:var(--ink-3)}
+.spots-done>summary{list-style:none;cursor:pointer;color:var(--ex-pmc);font-size:12px;padding:6px 10px;border:1px dashed var(--line);border-radius:2px}
+.spots-done>summary::-webkit-details-marker{display:none}
+.spots-done>summary::before{content:"▸ ";}
+.spots-done[open]>summary::before{content:"▾ ";}
+.spots-done>summary:hover{background:var(--panel-2)}
+.spots-done__list{display:grid;gap:inherit;margin-top:6px}
+.gmid summary{list-style:none;cursor:pointer;color:var(--ink-3);font-size:12px;padding:1px 4px 1px 25px;border-radius:2px}
+.gmid summary::-webkit-details-marker{display:none}
+.gmid summary::before{content:"▸ ";}
+.gmid details[open]>summary::before{content:"▾ ";}
+.gmid summary:hover{color:var(--ink-2);background:var(--panel-2)}
+.gstage__s{font-family:var(--body);font-weight:400;letter-spacing:0;margin-left:4px}
+.ftag--done{color:var(--ex-pmc)!important;border-color:var(--ex-pmc)!important}
+.spot{display:grid;gap:4px;padding:8px 10px;border:1px solid var(--line-soft);background:rgba(0,0,0,.14)}
+.spot__h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.spot__t{font-weight:500;font-size:13px;flex:1 1 auto;min-width:0}
+.spot__t.is-spawn{color:var(--ink-2)}
+.ftag{font:600 10.5px/1 var(--mono);padding:3px 5px;border:1px solid var(--line);color:var(--ink-2);border-radius:2px}
+.ftag--none{color:var(--ink-3);font-family:var(--body);font-weight:400}
+.go{font:500 11px/1 var(--body);color:var(--ink-2);border:1px solid var(--line);background:none;padding:4px 7px;border-radius:2px;cursor:pointer}
+.go:hover{color:var(--amber);border-color:var(--amber-dim)}
+.spot__n{margin:0;color:var(--ink-2);font-size:12px}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.thumb{padding:0;border:1px solid var(--line);background:none;cursor:zoom-in;line-height:0;border-radius:2px;overflow:hidden}
+.thumb img{width:84px;height:47px;object-fit:cover;display:block}
+.thumb:hover{border-color:var(--amber-dim)}
+.choices summary{cursor:pointer;color:var(--ink-2);font-size:12.5px}
+.choices p{margin:6px 0 0;color:var(--ink-3);font-size:12px;line-height:1.7}
+.tips{margin:0;padding:0;list-style:none;display:grid;gap:3px;color:var(--ink-2);font-size:12px}
+.warn{color:var(--amber);font-size:12px;margin:0}
+
+/* ---------- keys ---------- */
+.keys{max-width:1560px;margin:0 auto;padding:0 26px 50px}
+.keys__h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:24px;margin-bottom:14px}
+.keys__h h2{font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:.06em;margin:0}
+.keys__h p{margin:0;color:var(--ink-3);font-size:12px}
+.tw{overflow-x:auto;border:1px solid var(--line-soft)}
+table{border-collapse:collapse;width:100%;min-width:780px;font-size:13px}
+th,td{padding:9px 14px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+thead th{font-family:var(--display);font-size:10.5px;letter-spacing:.16em;color:var(--ink-3);font-weight:500;background:var(--panel)}
+tbody tr:last-child td{border-bottom:none}
+.kn{display:flex;gap:8px;align-items:center}
+.kn img{width:28px;height:28px;object-fit:contain}
+td.num{font-family:var(--mono);white-space:nowrap}
+.tag{font-size:10.5px;padding:2px 6px;border-radius:2px;white-space:nowrap;margin-right:4px}
+.tag--req{color:var(--amber);border:1px solid var(--amber-dim)}
+.tag--opt{color:var(--ink-2);border:1px dashed var(--line)}
+.tag--hand{color:var(--t-skier);border:1px solid var(--t-skier)}
+.warnnum{color:var(--bad)}
+.dim{color:var(--ink-3);font-size:11.5px}
+footer{max-width:1560px;margin:0 auto;padding:0 26px 40px;color:var(--ink-3);font-size:11.5px;border-top:1px solid var(--line-soft)}
+footer p{margin:14px 0 0;max-width:90ch}
+footer code{font-family:var(--mono);color:var(--ink-2)}
+
+dialog.lb{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:0;max-width:min(1100px,94vw);width:100%}
+dialog.lb::backdrop{background:rgba(8,8,6,.82)}
+.lb img{display:block;width:100%;height:auto}
+.lb__stage{position:relative}
+/* 圖片左右的翻頁箭頭：半透明＋背景模糊，不擋圖；滑過時才變明顯 */
+.lb__arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;display:grid;place-items:center;padding:0;border:0;border-radius:4px;
+  background:rgba(14,14,10,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:rgba(234,229,213,.72);cursor:pointer;opacity:.6;transition:opacity .15s,background .15s}
+.lb__arrow--l{left:10px}.lb__arrow--r{right:10px}
+.lb__arrow svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.lb__stage:hover .lb__arrow{opacity:.85}
+.lb__arrow:hover,.lb__arrow:focus-visible{opacity:1;background:rgba(14,14,10,.5);color:var(--ink)}
+@media (max-width:600px){.lb__arrow{width:36px;height:52px}.lb__arrow--l{left:4px}.lb__arrow--r{right:4px}}
+.lb__bar{display:flex;align-items:center;gap:10px;padding:9px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-2)}
+.lb__bar span{flex:1 1 auto;min-width:0}
+
+
+/* 撤離點 */
+.chip--sm{padding:5px 8px;font-size:11.5px}
+.chip--ex{--sw:var(--ex-pmc)} .chip--btr{--sw:var(--btr)}
+.chip--ex[aria-pressed="true"]{border-color:var(--sw);color:var(--ink);background:color-mix(in srgb,var(--sw) 14%,transparent)}
+.chip--ex[aria-pressed="false"],.extypes .chip[aria-pressed="false"]{border-style:dashed;color:var(--ink-3);background:transparent}
+.chip--ex::before{content:"";width:22px;height:12px;border-radius:6px;flex:none;box-sizing:border-box;border:1.5px solid currentColor;
+  background:radial-gradient(circle at 5px 50%,currentColor 3.2px,transparent 3.6px)}
+.chip--ex[aria-pressed="true"]::before{border-color:var(--sw);background:radial-gradient(circle at 16px 50%,#0E0E0A 3.2px,transparent 3.6px),var(--sw)}
+.extypes{display:inline-flex;gap:4px;flex-wrap:wrap}
+.extypes.is-off{opacity:.35;pointer-events:none}
+/* 子類型：開＝類型色實心點＋類型色框與底色；關＝空心點、虛線框、字變暗 */
+.extypes .chip{--c:var(--ex-pmc)}
+.extypes .chip[data-ex="scav"]{--c:var(--ex-scav)}
+.extypes .chip[data-ex="transit"]{--c:var(--ex-transit)}
+.extypes .chip[data-btr]{--c:var(--btr)}
+.exdot--btr{background:var(--btr)}
+.btrctl{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* BTR */
+.btr-route{fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.8;cursor:pointer}
+.btr-route.is-on{opacity:1}
+.btr-route.is-dim{opacity:.18}
+.bs{cursor:pointer}
+.bs__box{fill:var(--btr);stroke:#0E0E0A;stroke-width:1.2}
+.bs__t{font:700 5.4px var(--mono);fill:#0E0E0A;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.bs__label{font:600 calc(9.5px*var(--lf,1)) var(--body);fill:var(--btr);paint-order:stroke;stroke:#0E0E0A;stroke-width:calc(3px*var(--lf,1));dominant-baseline:central;pointer-events:none}
+.bs.is-on .bs__box{stroke:var(--ink);stroke-width:2.4}
+.btr-arrows{pointer-events:none;opacity:.95}
+.btr-arrows path{stroke:#0E0E0A;stroke-width:.9;stroke-linejoin:round}
+.btr-arrows.is-dim{opacity:.15}
+.btr-route.is-hid,.btr-arrows.is-hid,.bs.is-hid{display:none}
+.bs.is-off{opacity:.3}
+.exinfo .rt{display:inline-flex;align-items:center;gap:5px;margin-right:10px;white-space:nowrap}
+.exinfo .rt i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.extypes .chip[aria-pressed="true"]{border-color:var(--c);color:var(--ink);background:color-mix(in srgb,var(--c) 16%,transparent)}
+.extypes .chip[aria-pressed="false"] .exdot{background:transparent;box-shadow:inset 0 0 0 1.5px var(--c);opacity:.7}
+.extypes .chip[aria-pressed="false"] span,.extypes .chip[aria-pressed="false"]{text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.exdot{display:inline-block;width:9px;height:9px;border-radius:2px;flex:none}
+.exdot--pmc{background:var(--ex-pmc)} .exdot--scav{background:var(--ex-scav)} .exdot--transit{background:var(--ex-transit)}
+.ex{cursor:pointer}
+.ex__box{stroke:#0E0E0A;stroke-width:1.2}
+.ex--pmc .ex__box{fill:var(--ex-pmc)} .ex--scav .ex__box{fill:var(--ex-scav)} .ex--transit .ex__box{fill:var(--ex-transit)}
+.ex--shared .ex__box{fill:var(--ex-pmc);stroke:var(--ex-scav);stroke-width:2.2}
+.ex__art{fill:none;stroke:#0E0E0A;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.ex__label{font:600 calc(9.5px*var(--lf,1)) var(--body);fill:var(--ink);paint-order:stroke;stroke:#0E0E0A;stroke-width:calc(3px*var(--lf,1));dominant-baseline:central;pointer-events:none}
+.ex.is-off{opacity:.3}
+.ex.is-hid{display:none}
+.ex.is-on .ex__box{stroke:var(--ink);stroke-width:2.4}
+.exinfo{position:absolute;left:12px;bottom:12px;max-width:min(360px,calc(100% - 24px));background:rgba(19,19,14,.94);border:1px solid var(--line);border-left:3px solid var(--ex-pmc);padding:10px 34px 10px 12px;font-size:12.5px;color:var(--ink-2)}
+.exinfo b{color:var(--ink);font-size:13.5px;display:block;margin-bottom:2px}
+.exinfo .t{font:600 10.5px var(--mono);letter-spacing:.06em;margin-right:6px}
+.exinfo p{margin:6px 0 0;white-space:pre-line}
+.exinfo button{position:absolute;top:6px;right:6px;background:none;border:0;color:var(--ink-3);font-size:16px;cursor:pointer;line-height:1;padding:2px 6px}
+.exinfo button:hover{color:var(--ink)}
+
+/* 地圖切換、瀏覽篩選（多地圖） */
+.maps{display:flex;flex-wrap:wrap;gap:4px}
+.mapbtn{font:500 12px/1 var(--body);display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid var(--line-soft);border-radius:2px;background:transparent;color:var(--ink-3);cursor:pointer}
+.mapbtn:hover{color:var(--ink);border-color:var(--rule)}
+.mapbtn.has{color:var(--ink);border-color:var(--rule)}
+.mapbtn b{font:600 10.5px/1 var(--mono);color:#16140D;background:var(--amber);padding:2px 4px;border-radius:2px}
+.mapbtn[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:#16140D}
+.mapbtn[aria-pressed="true"] b{background:#16140D;color:var(--amber)}
+.bfilter{display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 8px;border-bottom:1px solid var(--line-soft)}
+.bf{font:12px/1 var(--body);padding:5px 8px;border:1px solid var(--line-soft);border-radius:2px;background:transparent;color:var(--ink-2);cursor:pointer}
+.bf small{color:var(--ink-3);font:10.5px var(--mono)}
+.bf:hover{color:var(--ink);border-color:var(--rule)}
+.bf[aria-pressed="true"]{background:var(--panel-2);color:var(--amber);border-color:var(--amber-dim)}
+.browse__groups{display:grid;gap:10px}
+.q__sub{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+.q__maps{font-size:11.5px;color:var(--ink-3)}
+.q__en{font:500 12px/1.4 var(--display);letter-spacing:.03em;color:var(--ink-2)}
+/* 語言 */
+html:lang(zh-Hans){--display:"Oswald","Noto Sans SC","Microsoft YaHei","PingFang SC",sans-serif;--body:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif}
+.masthead{position:relative}
+.lang{position:absolute;top:10px;right:14px;display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden;background:#100F0B;z-index:2}
+.lang button{font:600 11.5px/1 var(--body);padding:6px 9px;background:transparent;color:var(--ink-3);border:0;border-right:1px solid var(--line);cursor:pointer}
+.lang button:last-child{border-right:0}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--amber);color:#16140D}
+@media (max-width:960px){.masthead{padding-top:46px}}
+.mh__note{margin:6px 0 0;color:var(--amber);font-size:12px;max-width:62ch}
+html:lang(en) .row{grid-template-columns:48px minmax(0,1fr)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+/* 地圖欄剛好一屏高：左右兩欄時地圖填滿工具列以外的高度，圖例不會被切掉 */
+@media (min-width:1081px){
+  .mapcol{display:flex;flex-direction:column;height:calc(100vh - 28px)}
+  .mapcol>*{flex:none}
+  .viewport{flex:1 1 auto;height:auto;min-height:300px}
+}
+/* 樓層（左上，樓層標籤下面）與縮放（右下）浮在地圖上 */
+.ov{position:absolute;z-index:3;display:flex;gap:4px}
+.ov--tl{left:12px;top:44px}
+.ov--br{right:12px;bottom:12px;flex-direction:column;align-items:flex-end}
+.ov .floors,.ov .zb{background:rgba(19,19,14,.88);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.ov--tl .floors{flex-direction:column}
+.ov--tl .floor{border-right:0;border-bottom:1px solid var(--line);text-align:center}
+.ov--tl .floor:last-child{border-bottom:0}
+.ov .zb{width:34px;height:34px;padding:0}
+.ov .zb--w{width:auto;padding:0 9px}
+/* 任務卡收合：點標題列；選中的任務一律展開 */
+.q__top{cursor:pointer}
+.qcol{flex:none;width:18px;height:18px;padding:0;border:0;background:none;color:var(--ink-3);cursor:pointer;font-size:11px;line-height:18px;align-self:center;transition:transform .15s}
+.qcol:hover{color:var(--amber)}
+.q.is-col:not(.is-on) .qcol{transform:rotate(-90deg)}
+.q.is-col:not(.is-on) .q__body{display:none}
+.q.is-col:not(.is-on){padding-bottom:10px}
+.q__prog{font:600 11px/1 var(--mono);color:var(--ink-3)}
+/* 攜入只顯示鑰匙 */
+.carry__keys{margin-left:auto}
+.carry__none{padding:0 0 4px;color:var(--ink-3);font-size:12px}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="lang" id="lang" role="group" aria-label="語言 / 语言 / Language"><button type="button" data-lang="tw" lang="zh-Hant" aria-pressed="false">繁中</button><button type="button" data-lang="cn" lang="zh-Hans" aria-pressed="false">简中</button><button type="button" data-lang="en" lang="en" aria-pressed="false">EN</button></div>
+  <div class="mh">
+    <div>
+      <p class="eyebrow" data-t="eyebrow">Escape from Tarkov · 任務</p>
+      <h1 data-t="title">塔科夫任務查詢</h1>
+      <p class="mh__sub" data-t="sub">貼上任務名（中文或英文都可以；一行一個，或用逗號分隔），就會把目標、需要的鑰匙與物品、各地圖上的位置標點整理出來。</p>
+      <p class="mh__note" data-t="enNote" hidden></p>
+      <p class="mh__meta"><span id="meta"></span> · <a href="help.html" style="color:var(--amber)" data-t="help">使用說明</a></p>
+    </div>
+    <form class="search" id="form">
+      <label for="qbox" data-t="qlabel">任務名</label>
+      <div class="tabs" id="tabs" role="tablist" data-t-aria="tabsAria" aria-label="隊友"></div>
+      <textarea id="qbox" spellcheck="false" data-t-ph="placeholder" placeholder="例：&#10;美味香腸&#10;獵人之路 大動作&#10;Kings of the Rooftops"></textarea>
+      <div class="search__row">
+        <button class="btn btn--go" type="submit" data-t="search">查詢</button>
+        <button class="btn" type="button" id="clear" data-t="clear">清空</button>
+        <button class="btn" type="button" id="ocrBtn" data-t="ocrBtn" data-t-title="ocrBtnT" title="選一張任務清單截圖，自動辨識任務名（也可以直接在框裡 Ctrl+V 貼上或拖進截圖）">截圖辨識</button>
+        <input type="file" id="ocrFile" accept="image/*" multiple hidden>
+        <span class="search__hint" data-t="hint">Ctrl + Enter 查詢 · 繁簡英皆可 · 可直接貼上任務截圖</span>
+      </div>
+      <div class="result" id="result" aria-live="polite"></div>
+      <div class="result" id="ocrMsg" aria-live="polite"></div>
+    </form>
+  </div>
+</header>
+
+<div class="browse">
+  <details id="browse">
+    <summary id="browseSum">瀏覽全部任務</summary>
+    <div class="browse__body">
+      <div class="bfilter" id="bfilter" role="group" data-t-aria="byMap" aria-label="依地圖篩選"></div>
+      <div class="browse__groups" id="browseBody"></div>
+    </div>
+  </details>
+</div>
+
+<main class="board">
+  <section class="mapcol" data-t-aria="map" aria-label="地圖">
+    <div class="toolbar">
+      <span class="tl" data-t="tlMap">地圖</span>
+      <div class="maps" id="maps" role="group" data-t-aria="switchMap" aria-label="切換地圖"></div>
+    </div>
+    <div class="toolbar">
+      <span class="tl" data-t="tlShow">顯示</span>
+      <button class="chip chip--ex" type="button" id="exToggle" aria-pressed="true" data-t="extracts">撤離點</button>
+      <span class="extypes" id="exTypes">
+        <button class="chip chip--sm" type="button" data-ex="pmc" aria-pressed="true"><i class="exdot exdot--pmc"></i>PMC</button>
+        <button class="chip chip--sm" type="button" data-ex="scav" aria-pressed="false"><i class="exdot exdot--scav"></i>Scav</button>
+        <button class="chip chip--sm" type="button" data-ex="transit" aria-pressed="true"><i class="exdot exdot--transit"></i><span data-t="transits">轉移點</span></button>
+      </span>
+      <span class="btrctl" id="btrCtl" hidden>
+        <button class="chip chip--ex chip--btr" type="button" id="btrToggle" aria-pressed="false">BTR</button>
+        <span class="extypes" id="btrTypes">
+          <button class="chip chip--sm" type="button" data-btr="stops" aria-pressed="true"><i class="exdot exdot--btr"></i><span data-t="btrStops">停靠站</span></button>
+          <button class="chip chip--sm" type="button" data-btr="routes" aria-pressed="true"><i class="exdot exdot--btr"></i><span data-t="btrRoutes">路線</span></button>
+        </span>
+      </span>
+      <span class="sep"></span>
+      <button class="chip chip--key" type="button" id="fKey" aria-pressed="false" data-t="keyOnly">只看需鑰匙</button>
+    </div>
+    <div class="toolbar" id="traders"></div>
+    <div class="viewport" id="vp">
+      <div class="stage" id="stage">
+        <img id="mapimg" data-t-alt="map" alt="地圖" draggable="false">
+        <svg id="pins" aria-hidden="true"></svg>
+      </div>
+      <div class="floorbadge" id="floorbadge"></div>
+      <div class="ov ov--tl" data-t-aria="tlFloor" role="group" aria-label="樓層"><div class="floors" id="floors"></div></div>
+      <div class="ov ov--br">
+        <button class="zb zb--w" type="button" id="zReset" data-t="reset">重設</button>
+        <button class="zb" type="button" id="zIn" data-t-aria="zoomIn" aria-label="放大">+</button>
+        <button class="zb" type="button" id="zOut" data-t-aria="zoomOut" aria-label="縮小">−</button>
+      </div>
+      <div class="empty" id="empty" hidden></div>
+      <div class="exinfo" id="exinfo" hidden></div>
+    </div>
+    <div class="maphint">
+      <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="6" fill="#A79F87"/></svg><span data-t="lgGoal">要去的地點</span></span>
+      <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="5" fill="#14130E" stroke="#A79F87" stroke-width="2.2"/></svg><span data-t="lgSpawn">擇一刷新</span></span>
+      <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><rect x="-6" y="-6" width="12" height="12" rx="2" fill="#12110C" stroke="#E3A63C" stroke-width="1.4"/><path d="M-2.4 -1 A2.4 2.4 0 0 1 2.4 -1" fill="none" stroke="#E3A63C" stroke-width="1.4"/><rect x="-3.2" y="-1" width="6.4" height="4.4" rx=".8" fill="#E3A63C"/></svg><span data-t="lgDoor">鑰匙門</span></span>
+      <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><rect x="-5" y="-5" width="10" height="10" transform="rotate(45)" fill="#12110C" stroke="#E3A63C" stroke-width="1.4"/><circle cx="-1.4" cy="0" r="1.6" fill="none" stroke="#E3A63C" stroke-width="1.2"/><path d="M0.2 0 H3.2" stroke="#E3A63C" stroke-width="1.2"/></svg><span data-t="lgKey">鑰匙刷點</span></span>
+      <span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><rect x="-6" y="-6" width="12" height="12" rx="3" fill="#2FCB8B" stroke="#0E0E0A" stroke-width="1"/><path d="M-3 0 H3 M0.8 -2.2 L3 0 L0.8 2.2" fill="none" stroke="#0E0E0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="lgExtract">撤離點</span></span>
+      <span class="lg"><svg width="18" height="14" viewBox="-9 -7 18 14"><rect x="-8" y="-5.5" width="16" height="11" rx="2.5" fill="#B58BE0" stroke="#0E0E0A" stroke-width="1"/><text x="0" y="0.3" font-family="monospace" font-weight="700" font-size="5.4" fill="#0E0E0A" text-anchor="middle" dominant-baseline="central">BTR</text></svg><span data-t="lgBtr">BTR 停靠站</span></span>
+      <span style="margin-left:auto" data-t="mapNav"><b>拖曳</b> 平移 · <b>滾輪</b> 縮放 · <b>Alt+滾輪</b> 換樓層</span>
+    </div>
+  </section>
+
+  <section class="listcol" id="listcol" data-t-aria="questList" aria-label="任務清單">
+    <details class="carry" id="carryIn" open hidden><summary><span class="carry__t" id="carryInT">攜入物品</span><span class="carry__s" data-t="carryInSub">進戰局前要帶在身上的鑰匙和道具</span><button class="chip chip--sm chip--key carry__keys" type="button" id="carryKeys" aria-pressed="false" data-t="carryKeys">只顯示鑰匙</button></summary><ul class="carry__list" id="carryInList"></ul></details>
+    <details class="carry" id="carryOut" open hidden><summary><span class="carry__t" id="carryOutT">攜出物品</span><span class="carry__s" data-t="carryOutSub">要從戰局裡帶出來的任務物品</span></summary><ul class="carry__list" id="carryOutList"></ul></details>
+    <div class="listbar"><p class="listhead" id="listhead">任務</p><button class="chip chip--sm" type="button" id="colAll" hidden>全部收合</button><button class="chip chip--sm chip--here" type="button" id="hereOnly" aria-pressed="false" data-t-title="hereT" title="只列出目前地圖的任務和攜入／攜出物品">只看當前地圖</button></div>
+    <div id="list" style="display:grid;gap:10px"></div>
+  </section>
+</main>
+
+<section class="keys" data-t-aria="keys" aria-label="鑰匙清單" id="keysSec">
+  <div class="keys__h">
+    <h2 data-t="keys">鑰匙清單</h2>
+    <p data-t="keysSub">目前查詢的任務會用到的鑰匙。</p>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th data-t="thKey">鑰匙</th><th data-t="thUse">用途</th><th data-t="thDesc">說明</th><th data-t="thUses">使用次數</th><th data-t="thFlea">跳蚤</th><th data-t="thMap">地圖</th></tr></thead>
+      <tbody id="keyrows"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p data-t="foot1">來源：任務內容、攻略截圖、地圖與 BTR 路線取自 <a href="https://www.eftarkov.com/" target="_blank" rel="noopener" style="color:var(--ink-2)">eftarkov.com</a>（逃離塔科夫中文 Wiki，已獲授權使用），感謝原站整理；以 OpenCC 轉為繁體。英文任務目標、物品與撤離點名稱取自 <a href="https://escapefromtarkov.fandom.com/" target="_blank" rel="noopener" style="color:var(--ink-2)">Escape from Tarkov Fandom Wiki</a>（<a href="https://www.fandom.com/licensing" target="_blank" rel="noopener" style="color:var(--ink-2)">CC BY-NC-SA</a>）；英文任務名稱與部分目標取自 <a href="https://tarkov.dev/" target="_blank" rel="noopener" style="color:var(--ink-2)">tarkov.dev</a>。攻略說明的英文版由 AI 翻譯，可能和遊戲用詞略有不同。Escape from Tarkov 為 Battlestate Games 的商標，本站為非官方玩家工具。</p>
+  <p data-t="foot2">資料不會即時同步，建置時間見頁首。遇到內容和遊戲不符，請以遊戲內為準，或點任務名稱查看原站的最新版本。</p>
+</footer>
+
+<dialog class="lb" id="lb">
+  <div class="lb__stage"><img id="lbimg" alt="">
+    <button class="lb__arrow lb__arrow--l" type="button" id="lbL" data-t-aria="prev" aria-label="上一張"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="lb__arrow lb__arrow--r" type="button" id="lbR" data-t-aria="next" aria-label="下一張"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+  <div class="lb__bar"><span id="lbcap"></span><button class="btn" type="button" id="lbprev" data-t="prev">上一張</button><button class="btn" type="button" id="lbnext" data-t="next">下一張</button><button class="btn" type="button" id="lbclose" data-t="close">關閉</button></div>
+</dialog>
+
+<script src="data.js?v=202610181201"></script>
+<script>
+(function(){
+/* ---------- 語言：繁中（tw）/ 簡中（cn）/ 英文（en） ----------
+   靜態文字的繁中寫在 HTML（data-t），載入時讀進 L.tw；這裡只放簡中、英文，和動態產生的字串。
+   任務內容（目標、攻略、鑰匙名）來源只有中文：簡中模式轉回簡體，英文模式維持繁中。 */
+const L={tw:{
+  found:n=>`找到 ${n} 個任務`, miss:"找不到：", didYou:"　是不是要找：", multi:(x,n)=>`多個符合：${x} → ${n} 個`,
+  all:"全部", anyMap:"不限地圖", browseSum:n=>`瀏覽全部 ${n} 個任務（點一下加入／移除查詢）`, noPinT:"（沒有標點）",
+  browseNote:"名稱後面有「·」的任務在地圖上沒有標點（例如擊殺、存活、不限地圖的任務）。",
+  meta:(n,m,b)=>`資料庫：${n} 個任務 · ${m} 張地圖 · 建置於 ${b}`,
+  exShared:"PMC／Scav 共用", exTransit:"轉移點", exNone:"沒有特別條件。",
+  kmDoor:k=>`${k} 的門`, kmSpawn:k=>`${k} 刷點`, keyWord:"鑰匙",
+  emptyNone:"還沒有任務。在上方輸入任務名，或展開「瀏覽全部任務」點選。",
+  emptyHere:(m,o)=>`查詢中的任務在${m}沒有標點。有標點的地圖：${o}`, emptyAll:"查詢中的任務在地圖上都沒有標點。",
+  mapHas:n=>`${n} 個查詢中的任務在這張地圖上有標點`, mapNo:"查詢中的任務在這張地圖上沒有標點",
+  trader:"商人", sep:"、", hand:"上交 ", opt:"可選", fir:"戰局中找到", guide:"攻略", locate:"定位 ▸",
+  enlarge:"放大截圖", queried:x=>`查詢「${x}」`, src:"Wiki ↗", srcT:"在 Escape from Tarkov Fandom Wiki 開啟這個任務（英文）", lock:"需鑰匙", done:"✓ 完成", doneT:"完成：從查詢中移除這個任務",
+  // 逐項完成、劇情分段
+  goalDoT:"點一下標記這個目標已完成（地圖上隱藏它的標點）", goalUndoT:"已完成，點一下取消（重新顯示標點）", goalDoneTag:"✓ 已完成", emptyDone:"查詢中任務的目標都已標記完成，標點已隱藏（點目標可取消）。", stage:(k,n)=>`第 ${k} 段／共 ${n} 段`, stageDone:"✓ 已完成", stageLock:"🔒 完成上一段後解鎖", stageMore:n=>`🔒 之後還有 ${n} 段`, lockedTag:"🔒 未解鎖", lockedT:"要先完成前面的段落才會解鎖", midMore:n=>`⋯ 中間還有 ${n} 個目標（點開）`, doneSpots:n=>`✓ 已完成目標的 ${n} 個地點（點開）`,
+  // 任務名稱連結
+  wikiT:"在 eftarkov.com 開啟這個任務的攻略頁",
+  kGoal:"目標", kNeed:"需要", kGear:"武器", kWhere:"位置", kTips:"提示", kNote:"注意",
+  choices:n=>`指定武器／裝備 ${n} 種，任選其一`, noSpots:"原站沒有標點（不限地點的任務）。",
+  listhead:n=>`任務 · ${n} 個 · 依商人分色`, listEmpty:"任務",
+  // 攜入／攜出清單、只看當前地圖
+  carryIn:n=>`攜入物品 · ${n}`, carryOut:n=>`攜出物品 · ${n}`, hereOff:"只看當前地圖", hereOn:m=>`只看當前地圖：${m}`,
+  colT:"收合／展開", colAll:"全部收合", expAll:"全部展開", progT:"已完成的目標", carryKeys:"只顯示鑰匙", carryNoKeys:"這些任務不用帶鑰匙",
+  anyMapTag:"不限地圖", carryClear:"清除勾選", carryDoT:"勾選：已經帶上／已經帶出", carryUndoT:"已勾選，點一下取消", carryQT:"捲到這個任務",
+  kMark:"標記", kPlant:"放置", kUse:"使用", hereEmpty:m=>`查詢中的任務在${m}沒有要做的事。`,
+  tagReq:"必備", tagOpt:"可選", tagHand:"上交", door:"門", spawn:"刷點", spawnNote:"刷點：",
+  btrStop:"BTR 停靠站", btrRoute:"BTR 路線", btrVia:"經過的路線：", btrSeq:"停靠順序：", btrLoop:"（循環）",
+  loadFail:"資料載入失敗，請重新整理頁面。",
+  // 截圖辨識（OCR）
+  ocrLoad:"載入文字辨識中（只有第一次需要下載）…", ocrRun:(i,n)=>n>1?`辨識截圖 ${i}/${n}…`:"辨識截圖中…",
+  ocrDone:(n,a)=>`截圖：辨識出 ${n} 個任務${a<n?`，新增 ${a} 個`:""}`, ocrNone:"截圖裡沒有辨識出任務名",
+  ocrSkip:"沒對上的文字：", ocrFail:"文字辨識載入失敗（第一次使用需要連網）。",
+  // 隊友分頁
+  mate:k=>`隊友${k}`, whoT:a=>`在這些隊友的清單裡：${a.join("、")}`,
+  renameT:"改名（也可以雙擊分頁；清空＝恢復預設）"
+},cn:{
+  eyebrow:"Escape from Tarkov · 任务", title:"塔科夫任务查询", doctitle:"塔科夫任务查询",
+  sub:"粘贴任务名（中文或英文都可以；一行一个，或用逗号分隔），就会把目标、需要的钥匙与物品、各地图上的位置标点整理出来。",
+  enNote:"", help:"使用说明", qlabel:"任务名", placeholder:"例：\n美味香肠\n猎人之路 大动作\nKings of the Rooftops",
+  search:"查询", clear:"清空", hint:"Ctrl + Enter 查询 · 繁简英皆可 · 可直接粘贴任务截图",
+  ocrBtn:"截图识别", ocrBtnT:"选一张任务列表截图，自动识别任务名（也可以直接在框里 Ctrl+V 粘贴或拖进截图）",
+  ocrLoad:"加载文字识别中（只有第一次需要下载）…", ocrRun:(i,n)=>n>1?`识别截图 ${i}/${n}…`:"识别截图中…",
+  ocrDone:(n,a)=>`截图：识别出 ${n} 个任务${a<n?`，新增 ${a} 个`:""}`, ocrNone:"截图里没有识别出任务名",
+  ocrSkip:"没对上的文字：", ocrFail:"文字识别加载失败（第一次使用需要联网）。",
+  byMap:"按地图筛选", map:"地图", tlMap:"地图", switchMap:"切换地图", tlFloor:"楼层", keyOnly:"只看需钥匙", reset:"重置",
+  zoomOut:"缩小", zoomIn:"放大", tlShow:"显示", extracts:"撤离点", transits:"转移点",
+  lgGoal:"要去的地点", lgSpawn:"择一刷新", lgDoor:"钥匙门", lgKey:"钥匙刷点", lgExtract:"撤离点",
+  mapNav:"<b>拖拽</b> 平移 · <b>滚轮</b> 缩放 · <b>Alt+滚轮</b> 换楼层",
+  questList:"任务列表", keys:"钥匙清单", keysSub:"当前查询的任务会用到的钥匙。",
+  thKey:"钥匙", thUse:"用途", thDesc:"说明", thUses:"使用次数", thFlea:"跳蚤", thMap:"地图",
+  foot1:'来源：任务内容、攻略截图、地图与 BTR 路线取自 <a href="https://www.eftarkov.com/" target="_blank" rel="noopener" style="color:var(--ink-2)">eftarkov.com</a>（逃离塔科夫中文 Wiki，已获授权使用），感谢原站整理。英文任务目标、物品与撤离点名称取自 <a href="https://escapefromtarkov.fandom.com/" target="_blank" rel="noopener" style="color:var(--ink-2)">Escape from Tarkov Fandom Wiki</a>（<a href="https://www.fandom.com/licensing" target="_blank" rel="noopener" style="color:var(--ink-2)">CC BY-NC-SA</a>）；英文任务名称与部分目标取自 <a href="https://tarkov.dev/" target="_blank" rel="noopener" style="color:var(--ink-2)">tarkov.dev</a>。攻略说明的英文版由 AI 翻译，可能和游戏用词略有不同。Escape from Tarkov 为 Battlestate Games 的商标，本站为非官方玩家工具。',
+  foot2:"数据不会实时同步，构建时间见页首。遇到内容和游戏不符，请以游戏内为准，或点任务名称查看原站的最新版本。",
+  prev:"上一张", next:"下一张", close:"关闭",
+  found:n=>`找到 ${n} 个任务`, miss:"找不到：", didYou:"　是不是要找：", multi:(x,n)=>`多个符合：${x} → ${n} 个`,
+  all:"全部", anyMap:"不限地图", browseSum:n=>`浏览全部 ${n} 个任务（点一下加入／移除查询）`, noPinT:"（没有标点）",
+  browseNote:"名称后面有“·”的任务在地图上没有标点（例如击杀、存活、不限地图的任务）。",
+  meta:(n,m,b)=>`数据库：${n} 个任务 · ${m} 张地图 · 构建于 ${b}`,
+  exShared:"PMC／Scav 共用", exTransit:"转移点", exNone:"没有特别条件。",
+  kmDoor:k=>`${k} 的门`, kmSpawn:k=>`${k} 刷点`, keyWord:"钥匙",
+  emptyNone:"还没有任务。在上方输入任务名，或展开“浏览全部任务”点选。",
+  emptyHere:(m,o)=>`查询中的任务在${m}没有标点。有标点的地图：${o}`, emptyAll:"查询中的任务在地图上都没有标点。",
+  mapHas:n=>`${n} 个查询中的任务在这张地图上有标点`, mapNo:"查询中的任务在这张地图上没有标点",
+  trader:"商人", sep:"、", hand:"上交 ", opt:"可选", fir:"战局中找到", guide:"攻略", locate:"定位 ▸",
+  enlarge:"放大截图", queried:x=>`查询“${x}”`, src:"Wiki ↗", srcT:"在 Escape from Tarkov Fandom Wiki 打开这个任务（英文）", lock:"需钥匙", done:"✓ 完成", doneT:"完成：从查询中移除这个任务",
+  // 逐項完成、劇情分段
+  goalDoT:"点一下标记这个目标已完成（地图上隐藏它的标点）", goalUndoT:"已完成，点一下取消（重新显示标点）", goalDoneTag:"✓ 已完成", emptyDone:"查询中任务的目标都已标记完成，标点已隐藏（点目标可取消）。", stage:(k,n)=>`第 ${k} 段／共 ${n} 段`, stageDone:"✓ 已完成", stageLock:"🔒 完成上一段后解锁", stageMore:n=>`🔒 之后还有 ${n} 段`, lockedTag:"🔒 未解锁", lockedT:"要先完成前面的段落才会解锁", midMore:n=>`⋯ 中间还有 ${n} 个目标（点开）`, doneSpots:n=>`✓ 已完成目标的 ${n} 个地点（点开）`,
+  // 任務名稱連結
+  wikiT:"在 eftarkov.com 打开这个任务的攻略页",
+  kGoal:"目标", kNeed:"需要", kGear:"武器", kWhere:"位置", kTips:"提示", kNote:"注意",
+  choices:n=>`指定武器／装备 ${n} 种，任选其一`, noSpots:"原站没有标点（不限地点的任务）。",
+  listhead:n=>`任务 · ${n} 个 · 按商人分色`, listEmpty:"任务",
+  // 攜入／攜出清單、只看當前地圖
+  carryInSub:"进战局前要带在身上的钥匙和道具", carryOutSub:"要从战局里带出来的任务物品", hereT:"只列出当前地图的任务和携入／携出物品",
+  carryIn:n=>`携入物品 · ${n}`, carryOut:n=>`携出物品 · ${n}`, hereOff:"只看当前地图", hereOn:m=>`只看当前地图：${m}`,
+  colT:"收起／展开", colAll:"全部收起", expAll:"全部展开", progT:"已完成的目标", carryKeys:"只显示钥匙", carryNoKeys:"这些任务不用带钥匙",
+  anyMapTag:"不限地图", carryClear:"清除勾选", carryDoT:"勾选：已经带上／已经带出", carryUndoT:"已勾选，点一下取消", carryQT:"滚到这个任务",
+  kMark:"标记", kPlant:"放置", kUse:"使用", hereEmpty:m=>`查询中的任务在${m}没有要做的事。`,
+  tagReq:"必备", tagOpt:"可选", tagHand:"上交", door:"门", spawn:"刷点", spawnNote:"刷点：",
+  btrStops:"停靠站", btrRoutes:"路线", lgBtr:"BTR 停靠站", btrStop:"BTR 停靠站", btrRoute:"BTR 路线", btrVia:"经过的路线：", btrSeq:"停靠顺序：", btrLoop:"（循环）",
+  loadFail:"数据加载失败，请刷新页面。",
+  tabsAria:"队友", mate:k=>`队友${k}`, whoT:a=>`在这些队友的列表里：${a.join("、")}`,
+  renameT:"改名（也可以双击标签；清空＝恢复默认）"
+},en:{
+  eyebrow:"Escape from Tarkov · Quests", title:"Tarkov Quest Lookup", doctitle:"Tarkov Quest Lookup",
+  sub:"Paste quest names (English or Chinese, one per line or comma-separated) to get objectives, required keys and items, and their locations on each map.",
+  enNote:"Quest objectives and names use the official English text. Guide notes are translated from the Chinese source and may word things differently from the game.",
+  help:"Help", qlabel:"QUEST NAMES", placeholder:"e.g.\nKings of the Rooftops\nThe Delicious Sausage\nBig Game",
+  search:"Search", clear:"Clear", hint:"Ctrl + Enter to search · English or Chinese · paste a quest screenshot to read it",
+  ocrBtn:"Read screenshot", ocrBtnT:"Pick a screenshot of your quest list to read the quest names (or paste / drop it into the box)",
+  ocrLoad:"Loading text recognition (download needed the first time only)…", ocrRun:(i,n)=>n>1?`Reading screenshot ${i}/${n}…`:"Reading screenshot…",
+  ocrDone:(n,a)=>`Screenshot: read ${n} quest${n===1?"":"s"}${a<n?`, ${a} new`:""}`, ocrNone:"No quest names found in the screenshot",
+  ocrSkip:"Unrecognised lines: ", ocrFail:"Text recognition failed to load (it needs an internet connection the first time).",
+  byMap:"Filter by map", map:"Map", tlMap:"MAP", switchMap:"Switch map", tlFloor:"FLOOR", keyOnly:"Keys only", reset:"Reset",
+  zoomOut:"Zoom out", zoomIn:"Zoom in", tlShow:"SHOW", extracts:"Extracts", transits:"Transits",
+  lgGoal:"Objective", lgSpawn:"Possible spawn", lgDoor:"Locked door", lgKey:"Key spawn", lgExtract:"Extract",
+  mapNav:"<b>Drag</b> to pan · <b>Wheel</b> to zoom · <b>Alt+Wheel</b> to change floor",
+  questList:"Quest list", keys:"Keys", keysSub:"Keys used by the quests you searched.",
+  thKey:"Key", thUse:"Used for", thDesc:"Notes", thUses:"Uses", thFlea:"Flea", thMap:"Map",
+  foot1:'Sources: quest content, guide screenshots, maps and BTR routes come from <a href="https://www.eftarkov.com/" target="_blank" rel="noopener" style="color:var(--ink-2)">eftarkov.com</a> (a Chinese Escape from Tarkov wiki, used with permission). Thanks to its editors. English objectives, item and extract names come from the <a href="https://escapefromtarkov.fandom.com/" target="_blank" rel="noopener" style="color:var(--ink-2)">Escape from Tarkov Fandom Wiki</a> (<a href="https://www.fandom.com/licensing" target="_blank" rel="noopener" style="color:var(--ink-2)">CC BY-NC-SA</a>); English quest names and some objectives come from <a href="https://tarkov.dev/" target="_blank" rel="noopener" style="color:var(--ink-2)">tarkov.dev</a>. English guide notes are AI-translated from Chinese and may differ slightly from in-game wording. Escape from Tarkov is a trademark of Battlestate Games; this is an unofficial fan tool.',
+  foot2:"Data isn't live — see the build time at the top. If something differs from the game, trust the game, or open “Source ↗” on a quest card for the latest version.",
+  prev:"Prev", next:"Next", close:"Close",
+  found:n=>`Found ${n} quest${n===1?"":"s"}`, miss:"Not found: ", didYou:" — did you mean: ", multi:(x,n)=>`Multiple matches: ${x} → ${n}`,
+  all:"All", anyMap:"Any map", browseSum:n=>`Browse all ${n} quests (click to add / remove)`, noPinT:" (no map pins)",
+  browseNote:"Quests marked “·” have no map pins (e.g. kill, survive, or any-map quests).",
+  meta:(n,m,b)=>`${n} quests · ${m} maps · built ${b}`,
+  exShared:"PMC & Scav", exTransit:"Transit", exNone:"No special requirements.",
+  kmDoor:k=>`Door: ${k}`, kmSpawn:k=>`Key spawn: ${k}`, keyWord:"Key",
+  emptyNone:"No quests yet. Type quest names above, or open “Browse all quests” and click some.",
+  emptyHere:(m,o)=>`None of the searched quests have pins on ${m}. Maps with pins: ${o}`, emptyAll:"None of the searched quests have map pins.",
+  mapHas:n=>`${n} searched quest${n===1?" has":"s have"} pins on this map`, mapNo:"No searched quests have pins on this map",
+  trader:"TRADER", sep:", ", hand:"Hand in ", opt:"optional", fir:"FiR", guide:"Guide", locate:"Locate ▸",
+  enlarge:"Enlarge screenshot", queried:x=>`Searched “${x}”`, src:"Source ↗", srcT:"Open on eftarkov.com", lock:"Key needed", done:"✓ Done", doneT:"Done: remove this quest from the search",
+  // 逐項完成、劇情分段
+  goalDoT:"Mark this objective done (hides its map pins)", goalUndoT:"Done — click to undo (shows the pins again)", goalDoneTag:"✓ Done", emptyDone:"All objectives of the searched quests are marked done; their pins are hidden (click an objective to undo).", stage:(k,n)=>`Stage ${k} of ${n}`, stageDone:"✓ Done", stageLock:"🔒 Unlocks after the previous stage", stageMore:n=>`🔒 ${n} more stage${n>1?"s":""} after this`, lockedTag:"🔒 Locked", lockedT:"Finish the earlier stages to unlock this", midMore:n=>`⋯ ${n} more objective${n>1?"s":""} in between (click to expand)`, doneSpots:n=>`✓ ${n} spot${n>1?"s":""} for completed objectives (click to expand)`,
+  // 任務名稱連結
+  wikiT:"Open this quest on the Escape from Tarkov wiki (Fandom)",
+  kGoal:"Goal", kNeed:"Need", kGear:"Gear", kWhere:"Where", kTips:"Tips", kNote:"Note",
+  choices:n=>`${n} allowed weapons / gear — use any one`, noSpots:"No map pins on the source site (not tied to a location).",
+  listhead:n=>`Quests · ${n} · colored by trader`, listEmpty:"Quests",
+  // 攜入／攜出清單、只看當前地圖
+  carryInSub:"Keys and gear to bring into the raid", carryOutSub:"Quest items to bring out of the raid", hereT:"Only list quests and items for the current map",
+  carryIn:n=>`Bring in · ${n}`, carryOut:n=>`Bring out · ${n}`, hereOff:"Current map only", hereOn:m=>`Current map only: ${m}`,
+  colT:"Collapse / expand", colAll:"Collapse all", expAll:"Expand all", progT:"Objectives done", carryKeys:"Show only keys", carryNoKeys:"No keys needed for these quests",
+  anyMapTag:"Any map", carryClear:"Clear checks", carryDoT:"Check: packed / extracted", carryUndoT:"Checked — click to undo", carryQT:"Scroll to this quest",
+  kMark:"Mark", kPlant:"Plant", kUse:"Use", hereEmpty:m=>`The searched quests have nothing to do on ${m}.`,
+  tagReq:"Required", tagOpt:"Optional", tagHand:"Hand in", door:"Door", spawn:"Spawn", spawnNote:"Spawn: ",
+  btrStops:"Stops", btrRoutes:"Routes", lgBtr:"BTR stop", btrStop:"BTR stop", btrRoute:"BTR route", btrVia:"Routes: ", btrSeq:"Stops in order: ", btrLoop:" (loops)",
+  noFlea:"Can't be sold", loadFail:"Couldn't load the data. Please reload the page.",
+  tabsAria:"Teammates", mate:k=>`Teammate ${k}`, whoT:a=>`On these teammates' lists: ${a.join(", ")}`,
+  renameT:"Rename (or double-click the tab; clear to reset)"
+}};
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+// 沒選過語言：依瀏覽器的第一個語言自動選（繁體→繁中、簡體→簡中、其他→英文）；按過切換鈕就記住
+function detectLang(){
+  const saved=store.get("tarkov.lang"); if(saved&&L[saved]) return saved;
+  const l=String((navigator.languages&&navigator.languages[0])||navigator.language||"").toLowerCase();
+  if(!l.startsWith("zh")) return "en";
+  return /hans|-cn|-sg|-my/.test(l)&&!/hant/.test(l)?"cn":"tw";
+}
+let lang=detectLang();
+document.querySelectorAll("[data-t]").forEach(el=>{if(!(el.dataset.t in L.tw))L.tw[el.dataset.t]=el.innerHTML;});
+document.querySelectorAll("[data-t-ph]").forEach(el=>L.tw[el.dataset.tPh]=el.getAttribute("placeholder"));
+document.querySelectorAll("[data-t-aria]").forEach(el=>{if(!(el.dataset.tAria in L.tw))L.tw[el.dataset.tAria]=el.getAttribute("aria-label");});
+document.querySelectorAll("[data-t-title]").forEach(el=>{if(!(el.dataset.tTitle in L.tw))L.tw[el.dataset.tTitle]=el.getAttribute("title");});
+L.tw.doctitle=document.title; L.tw.enNote="";
+const t=(k,...a)=>{const v=k in L[lang]?L[lang][k]:L.tw[k];return typeof v==="function"?v(...a):(v??"");};
+const D=window.TARKOV;
+if(!D||!D.maps){document.body.innerHTML=`<p style="padding:40px;color:#EAE5D5">${t("loadFail")}</p>`;return;}
+
+const TRADER_VAR={Prapor:"--t-prapor",Therapist:"--t-therapist",Skier:"--t-skier",Mechanic:"--t-mechanic",Ragman:"--t-ragman",
+  Jaeger:"--t-jaeger",Fence:"--t-fence",Peacekeeper:"--t-peacekeeper",Lightkeeper:"--t-lightkeeper","剧情":"--t-story"};
+const tcol=t=>`var(${TRADER_VAR[t]||"--t-other"})`;
+const MAPS=D.maps, MAPBY=Object.fromEntries(MAPS.map(m=>[m.id,m]));
+const ICONS=new Set(D.icons||[]);
+const NS="http://www.w3.org/2000/svg";
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mk=(tag,a={},p)=>{const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;};
+const icon=id=>ICONS.has(id)?`<img src="icons/${id}.webp" alt="" loading="lazy">`:"";
+const keyInfo=Object.fromEntries(D.keys.map(k=>[k.id,k]));
+// 逐項完成：{任務ID: [已完成的目標序號]}，存在瀏覽器裡。完成的目標的標點不畫在地圖上；全部目標都完成時整個任務的標點都隱藏
+let GD={}; try{GD=JSON.parse(store.get("tarkov.goals")||"{}")||{};}catch(e){GD={};}
+// 目標重排過的劇情（overrides 的 goal_order）：舊的勾選紀錄依 q.goal_remap（原序號 → 新序號）搬一次，tarkov.goalsRemap 記住已搬過
+{let MG={}; try{MG=JSON.parse(store.get("tarkov.goalsRemap")||"{}")||{};}catch(e){MG={};}
+ let ch=false;
+ D.quests.forEach(q=>{if(!q.goal_remap) return; const sig=q.goal_remap.join(","); if(MG[q.id]===sig) return;
+   if(GD[q.id]) GD[q.id]=GD[q.id].map(i=>i<q.goal_remap.length?q.goal_remap[i]:i).sort((x,y)=>x-y);
+   MG[q.id]=sig; ch=true;});
+ if(ch){store.set("tarkov.goals",JSON.stringify(GD)); store.set("tarkov.goalsRemap",JSON.stringify(MG));}}
+D.quests.forEach(q=>q.spots.forEach(s=>s._q=q));
+const goalDone=(q,i)=>(GD[q.id]||[]).includes(i);
+const allDone=q=>q.goals.length>0&&q.goals.every((_,i)=>goalDone(q,i));
+// 劇情線分段（q.stages = 每段第一個目標的序號）：前面的段落全部完成才解鎖下一段；未解鎖的目標灰色、不能勾、不畫標點
+const stageOf=(q,i)=>{let k=0;(q.stages||[]).forEach((st,j)=>{if(i>=st)k=j;});return k;};
+const stageRange=(q,k)=>[q.stages[k],k+1<q.stages.length?q.stages[k+1]:q.goals.length];
+function curStage(q){
+  if(!q.stages) return 0;
+  for(let k=0;k<q.stages.length;k++){const [a,b]=stageRange(q,k);for(let i=a;i<b;i++)if(!goalDone(q,i))return k;}
+  return q.stages.length;
+}
+const goalLocked=(q,i)=>!!q.stages&&stageOf(q,i)>curStage(q);
+const anyDone=q=>(GD[q.id]||[]).length>0;
+const spotLocked=s=>s.goal!=null&&goalLocked(s._q,s.goal);
+// 劇情線的解鎖地點（不屬於任何目標）：開始做任何目標後就不再顯示
+const spotDone=s=>allDone(s._q)||(s.goal!=null&&goalDone(s._q,s.goal)&&!spotLocked(s))||(!!s._q.stages&&s.goal==null&&anyDone(s._q));
+function toggleGoal(q,i){
+  const a=new Set(GD[q.id]||[]); a.has(i)?a.delete(i):a.add(i);
+  if(a.size) GD[q.id]=[...a].sort((x,y)=>x-y); else delete GD[q.id];
+  store.set("tarkov.goals",JSON.stringify(GD));
+}
+const hasXY=s=>s.x!==null&&s.map&&MAPBY[s.map];
+const pinned=s=>hasXY(s)&&!spotDone(s)&&!spotLocked(s);
+const hasPins=q=>q.spots.some(hasXY);
+const flName=(mapId,key)=>{const f=MAPBY[mapId]&&MAPBY[mapId].floors.find(f=>f.key===key);return f?f.name:(key==null||key==="None"?"":(+key<0?"B"+(-key):key+"F"));};
+const QBY=Object.fromEntries(D.quests.map(q=>[q.id,q]));
+
+/* ---------- 名稱比對：輸入先轉簡體，再和原站名稱比 ---------- */
+const FOLD=D.fold||{phrases:{},chars:{}};
+function makeConv(phr){
+  const max=Object.keys(phr).reduce((m,k)=>Math.max(m,k.length),0);
+  return s=>{
+    let out="";
+    for(let i=0;i<s.length;){
+      let hit=null;
+      for(let n=Math.min(max,s.length-i);n>=2&&!hit;n--){const p=s.substr(i,n);if(phr[p])hit=p;}
+      if(hit){out+=phr[hit];i+=hit.length;}
+      else{const c=s[i];out+=FOLD.chars[c]||c;i++;}
+    }
+    return out;
+  };
+}
+const toCn=makeConv({...(FOLD.tw_phrases||{}),...FOLD.phrases});   // 搜尋：「計畫」也要對到「计划」
+const toCnShow=makeConv(FOLD.phrases);                              // 顯示：不改用詞（「聯絡」不變「联系」）
+const cnCache=new Map();
+const C=s=>{if(lang!=="cn"||!s)return s??"";let v=cnCache.get(s);if(v===undefined){v=toCnShow(s);cnCache.set(s,v);}return v;};
+// 名稱：英文模式用英文名（沒有就用中文），副標顯示另一種語言
+const qName=q=>lang==="en"?(q.name_en||q.name):C(q.name);
+const qAlt=q=>lang==="en"?(q.name_en?q.name:""):(q.name_en||"");
+const mapName=id=>{const m=MAPBY[id];if(!m)return "";return lang==="en"?(m.name_en||m.name):lang==="cn"?(m.name_cn||C(m.name)):m.name;};
+const qMaps=q=>{const a=q.map_ids.map((id,i)=>mapName(id)||C(q.maps[i]||"")).filter(Boolean);return a.length?a.join(t("sep")):t("anyMap");};
+const trName=x=>(D.traders&&D.traders[x]&&D.traders[x][lang])||x;
+// 內容文字：英文模式有英文就用英文，沒有就退回繁中；簡中模式轉簡體
+const E=(zh,en)=>lang==="en"&&en?en:C(zh);
+const sTitle=s=>s.label?E(s.label,s.label_en):E(s.title||"",s.title_en);
+const listEn=(zh,en)=>lang==="en"&&en&&en.length?en:(zh||[]).map(C);
+const norm=s=>toCn(String(s||"").toLowerCase()).replace(/[\s\-–—－·・、,，.。!！?？()（）【】「」『』"'“”‘’：:]/g,"");
+const index=D.quests.map(q=>({q,keys:[...new Set([q.name,q.name_cn,q.name_en,...(q.aliases||[])].filter(Boolean).map(norm))]}));
+function bigrams(s){const a=[];for(let i=0;i<s.length-1;i++)a.push(s.slice(i,i+2));return a.length?a:[s];}
+function similar(a,b){
+  const A=bigrams(a),B=bigrams(b);let m=0;const used=new Array(B.length).fill(false);
+  A.forEach(x=>{const j=B.findIndex((y,k)=>!used[k]&&y===x);if(j>=0){used[j]=true;m++;}});
+  return 2*m/(A.length+B.length);
+}
+function lookup(raw){
+  const name=raw.replace(/^\s*\d+\s*[.、)）]\s*/,"").trim();
+  // 「名稱 #代號」：同名任務（例如 USEC/BEAR 兩個版本）用任務 ID 結尾分辨
+  const tag=name.match(/#([0-9a-f]{6,24})$/i);
+  if(tag){const h=D.quests.filter(q=>q.id.endsWith(tag[1].toLowerCase()));if(h.length)return {name,hits:h,suggest:[]};}
+  const n=norm(name); if(!n) return null;
+  let hit=index.filter(e=>e.keys.includes(n));
+  if(!hit.length) hit=index.filter(e=>e.keys.some(k=>k.includes(n)||(k.length>=2&&n.includes(k))));
+  let suggest=[];
+  if(!hit.length){
+    suggest=index.map(e=>({q:e.q,s:Math.max(...e.keys.map(k=>similar(n,k)))}))
+      .filter(x=>x.s>=0.4).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.q);
+  }
+  return {name,hits:hit.map(e=>e.q),suggest};
+}
+const parseInput=text=>text.split(/[\n,，;；]+/).map(s=>s.trim()).filter(Boolean);
+
+/* ---------- 狀態 ---------- */
+let current=[];                      // [{q, query}]
+let curMap=null, floor=null, sel=null, keyOnly=false;
+let onTraders=new Set();
+const floorByMap={};
+
+const qbox=document.getElementById("qbox");
+/* 隊友分頁：A～E 各自一份任務清單（輸入框顯示目前分頁的那份），查詢時合併，任務卡標出是哪幾個隊友的 */
+const TEAM=["A","B","C","D","E"];
+let team=null; try{team=JSON.parse(store.get("tarkov.team")||"null");}catch(e){team=null;}
+let tab=TEAM.includes(store.get("tarkov.tab"))?store.get("tarkov.tab"):"A";
+const usedTabs=()=>TEAM.filter(k=>parseInput(team[k]).length);
+// 自訂名字（tarkov.names，{"A":"小明"}）；沒取名的用「隊友A」，任務卡上用「A」
+let names={}; try{names=JSON.parse(store.get("tarkov.names")||"{}")||{};}catch(e){names={};}
+const mateName=k=>names[k]||t("mate",k), mateShort=k=>names[k]||k;
+let editing=null;
+function renderTabs(){
+  const cnt=Object.fromEntries(TEAM.map(k=>[k,current.filter(c=>c.who.includes(k)).length]));
+  document.getElementById("tabs").innerHTML=TEAM.map(k=>k===editing
+    ?`<input class="tab tab--edit" data-edit="${k}" maxlength="12" value="${esc(names[k]||"")}" placeholder="${esc(t("mate",k))}">`
+    :`<button type="button" class="tab" role="tab" data-tab="${k}" aria-selected="${k===tab}" title="${esc(t("renameT"))}">${esc(mateName(k))}${cnt[k]?`<small>${cnt[k]}</small>`:""}${k===tab?`<span class="tab__ed" data-rename aria-label="${esc(t("renameT"))}">✎</span>`:""}</button>`).join("");
+  const inp=document.querySelector("#tabs [data-edit]"); if(inp){inp.focus();inp.select();}
+}
+function rename(k){editing=k; renderTabs();}
+function endRename(save){
+  const inp=document.querySelector("#tabs [data-edit]"); if(!inp||editing===null) return;   // 重畫時移除輸入框也會觸發 focusout
+  const k=editing; editing=null;
+  if(save){
+    const v=inp.value.trim();
+    if(v) names[k]=v; else delete names[k];
+    store.set("tarkov.names",JSON.stringify(names));
+    render();
+  }
+  renderTabs();
+}
+document.getElementById("tabs").addEventListener("click",e=>{
+  if(e.target.closest("[data-rename]")){rename(tab);return;}
+  const b=e.target.closest("[data-tab]"); if(!b||b.dataset.tab===tab) return;
+  team[tab]=qbox.value; tab=b.dataset.tab; store.set("tarkov.tab",tab);
+  qbox.value=team[tab]; run(); qbox.focus();
+});
+document.getElementById("tabs").addEventListener("dblclick",e=>{
+  const b=e.target.closest("[data-tab]"); if(b) rename(b.dataset.tab);
+});
+document.getElementById("tabs").addEventListener("keydown",e=>{
+  if(!e.target.matches("[data-edit]")) return;
+  if(e.key==="Enter"){e.preventDefault();endRename(true);}
+  else if(e.key==="Escape"){e.preventDefault();endRename(false);}
+});
+document.getElementById("tabs").addEventListener("focusout",e=>{
+  if(e.target.matches("[data-edit]")) endRename(true);
+});
+qbox.addEventListener("input",()=>{team[tab]=qbox.value;});
+function run(save=true){
+  team[tab]=qbox.value;
+  const res=[], by=new Map(), miss=[], multi=[];
+  let nLines=0;
+  for(const k of TEAM){
+    const lines=parseInput(team[k]); nLines+=lines.length;
+    for(const l of lines){
+      const r=lookup(l); if(!r) continue;
+      if(!r.hits.length){miss.push({...r,tab:k});continue;}
+      if(r.hits.length>1) multi.push([r.name,r.hits.length]);
+      for(const q of r.hits){
+        let c=by.get(q.id); if(!c){c={q,query:r.name,who:[]};by.set(q.id,c);res.push(c);}
+        if(!c.who.includes(k)) c.who.push(k);
+      }
+    }
+  }
+  current=res; sel=null;
+  onTraders=new Set(current.map(c=>c.q.trader));
+  const multiTab=usedTabs().length>1;
+  document.getElementById("result").innerHTML=
+    (nLines?`<span>${t("found",current.length)}</span>`:"")+
+    miss.map(m=>`<span class="is-miss">${multiTab?esc(mateName(m.tab))+" · ":""}${t("miss")}${esc(m.name)}${m.suggest.length?`${t("didYou")}${m.suggest.map(q=>
+      `<button type="button" class="sug" data-tab="${m.tab}" data-from="${esc(m.name)}" data-to="${esc(qName(q))}">${esc(qName(q))}${lang!=="en"&&/^[\x00-\x7f]+$/.test(m.name)&&q.name_en?`（${esc(q.name_en)}）`:""}</button>`).join(" ")}`:""}</span>`).join("")+
+    multi.map(([x,n])=>`<span class="is-multi">${esc(t("multi",x,n))}</span>`).join("");
+  if(save){
+    store.set("tarkov.team",JSON.stringify(team));
+    const h=usedTabs().map(k=>k+"="+encodeURIComponent(parseInput(team[k]).join(","))).join("&");
+    history.replaceState(null,"",h?"#"+h:location.pathname+location.search);
+  }
+  renderTabs(); render();
+}
+document.getElementById("result").addEventListener("click",e=>{
+  const b=e.target.closest(".sug"); if(!b) return;
+  const k=b.dataset.tab||tab;
+  const lines=parseInput(k===tab?qbox.value:team[k]).map(l=>l.replace(/^\s*\d+\s*[.、)）]\s*/,"").trim());
+  const i=lines.indexOf(b.dataset.from);
+  if(i>=0) lines[i]=b.dataset.to; else lines.push(b.dataset.to);
+  team[k]=lines.join("\n"); if(k===tab) qbox.value=team[k]; run();
+});
+
+/* ---------- 截圖辨識（OCR）：貼上／拖進／選檔 → Tesseract.js → 對上任務名 ----------
+   遊戲任務清單是深底淺字（選中的那列是淺底深字），每列一個任務，長名稱會折成兩行。
+   Tesseract.js 只在第一次用到時從 CDN 載入（模型之後瀏覽器會快取）。
+   遊戲有英文版和簡中版：介面是中文就先用 chi_sim，英文就先用 eng；一張圖都沒對上時再換另一個模型試。 */
+const TESS_URL="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
+const ocrMsg=document.getElementById("ocrMsg");
+const ocrWorkers={};
+let ocrBusy=false;
+function loadScript(src){return new Promise((ok,bad)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s);});}
+async function getWorker(model){
+  if(ocrWorkers[model]) return ocrWorkers[model];
+  if(!window.Tesseract) await loadScript(TESS_URL);
+  return ocrWorkers[model]=await Tesseract.createWorker(model);
+}
+const ocrModels=()=>lang==="en"?["eng","chi_sim"]:["chi_sim","eng"];
+// 辨識一張圖 → 文字行（中文模型會在字和字之間加空格，先拿掉）
+async function ocrLines(worker,cv){
+  const {data}=await worker.recognize(cv);
+  return data.text.split("\n").map(s=>s.replace(/(?<=[一-鿿])\s+(?=[一-鿿])/g,"").trim()).filter(s=>/[A-Za-z一-鿿]{2}/.test(s));
+}
+// 前處理：每一橫列以中位數當背景，取「和背景的差」→ 白底黑字。深底淺字、淺底深字都能讀；小圖放大。
+async function prepImage(blob){
+  const bmp=await createImageBitmap(blob);
+  const k=bmp.width<1200?2:1, w=bmp.width*k, h=bmp.height*k;
+  const cv=document.createElement("canvas");cv.width=w;cv.height=h;
+  const cx=cv.getContext("2d");cx.imageSmoothingQuality="high";cx.drawImage(bmp,0,0,w,h);
+  const img=cx.getImageData(0,0,w,h), d=img.data, hist=new Uint32Array(256), lum=new Uint8Array(w*h), med=new Uint8Array(h);
+  for(let y=0;y<h;y++){
+    hist.fill(0);
+    for(let x=0;x<w;x++){const i=y*w+x, v=(d[i*4]*299+d[i*4+1]*587+d[i*4+2]*114)/1000|0;lum[i]=v;hist[v]++;}
+    for(let c=0,acc=0;c<256;c++){acc+=hist[c];if(acc*2>=w){med[y]=c;break;}}
+  }
+  // 長名稱佔滿整列時，穿過橫筆畫的那幾列多半是字，中位數會被判反（字上出現橫線）。
+  // 再沿垂直方向取 ±40 列的中位數，把這些細列修回背景色；列與列之間的底色變化（反白列）仍保留。
+  const R=40, bg=new Uint8Array(h);
+  for(let y=0;y<h;y++){const a=med.slice(Math.max(0,y-R),y+R+1).sort();bg[y]=a[a.length>>1];}
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    const i=y*w+x, v=255-Math.min(255,Math.abs(lum[i]-bg[y])*3);d[i*4]=d[i*4+1]=d[i*4+2]=v;
+  }
+  cx.putImageData(img,0,0);
+  return cv;
+}
+// 一行文字 → 最像的任務（完全相同優先，否則 bigram 相似度最高且 ≥ 0.75）
+function ocrMatch(text){
+  const n=norm(text), cjk=/[一-鿿]/.test(n); if(n.length<(cjk?2:3)) return null;
+  const exact=index.find(e=>e.keys.includes(n)); if(exact) return {q:exact.q,s:1};
+  // 中文名稱短，錯一個字 bigram 就掉很多（救助站点→救助站氮 只有 0.67），所以中文再算「逐字」相似度取高者
+  const sc=index.map(e=>{let s=0; for(const k of e.keys) s=Math.max(s,similar(n,k),cjk?1-editDist(n,k)/Math.max(n.length,k.length):0); return {q:e.q,s};});
+  const best=sc.reduce((a,b)=>b.s>a.s?b:a);
+  // 另一個不同名的任務一樣像（例如「化学品l」對 化学品-1/-2/-3）就不猜
+  const tie=sc.some(x=>x.s===best.s&&x.q.name!==best.q.name);
+  return best.s>=0.75&&!tie?best:null;
+}
+function editDist(a,b){
+  let p=[...Array(b.length+1).keys()];
+  for(let i=1;i<=a.length;i++){const c=[i];for(let j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}
+  return p[b.length];
+}
+// 逐行比對；這行和下一行接起來更像某個任務時（長名稱折行），就當成一個名稱
+function ocrLinesToQuests(lines){
+  const found=[], skip=[];
+  for(let i=0;i<lines.length;i++){
+    const one=ocrMatch(lines[i]), two=i+1<lines.length?ocrMatch(lines[i]+" "+lines[i+1]):null;
+    if(two&&(!one||two.s>one.s)){found.push(two.q);i++;}
+    else if(one) found.push(one.q);
+    else skip.push(lines[i]);
+  }
+  return {found,skip};
+}
+async function ocrFiles(files){
+  files=[...files].filter(f=>f&&/^image\//.test(f.type)); if(!files.length||ocrBusy) return;
+  ocrBusy=true;
+  const say=(html,cls="is-busy")=>{ocrMsg.innerHTML=html?`<span class="${cls}">${html}</span>`:"";};
+  try{
+    say(esc(t("ocrLoad")));
+    const models=ocrModels();
+    try{await getWorker(models[0]);}catch(e){say(esc(t("ocrFail")),"is-miss");return;}
+    const found=[], skip=[];
+    for(let i=0;i<files.length;i++){
+      say(esc(t("ocrRun",i+1,files.length)));
+      const cv=await prepImage(files[i]);
+      let r=ocrLinesToQuests(await ocrLines(await getWorker(models[0]),cv));
+      if(!r.found.length){   // 可能是另一種語言版本的遊戲截圖
+        say(esc(t("ocrLoad")));
+        try{const r2=ocrLinesToQuests(await ocrLines(await getWorker(models[1]),cv)); if(r2.found.length) r=r2;}catch(e){console.error(e);}
+      }
+      found.push(...r.found); skip.push(...r.skip);
+    }
+    // 加到輸入框（已經在查詢中的不重複加）
+    const have=new Set(), out=parseInput(qbox.value);
+    out.forEach(l=>{const r=lookup(l); if(r) r.hits.forEach(q=>have.add(q.id));});
+    const uniq=[...new Map(found.map(q=>[q.id,q])).values()];
+    let added=0;
+    for(const q of uniq) if(!have.has(q.id)){have.add(q.id);out.push(lineFor(q));added++;}
+    if(added){qbox.value=out.join("\n"); run();}
+    say(uniq.length?esc(t("ocrDone",uniq.length,added))+(skip.length?`　${esc(t("ocrSkip"))}${skip.map(esc).join(" · ")}`:""):esc(t("ocrNone")),uniq.length?"":"is-miss");
+  }catch(e){console.error(e);say(esc(t("ocrFail")),"is-miss");}
+  finally{ocrBusy=false;}
+}
+qbox.addEventListener("paste",e=>{
+  const imgs=[...(e.clipboardData?.items||[])].filter(it=>it.kind==="file"&&/^image\//.test(it.type)).map(it=>it.getAsFile());
+  if(imgs.length){e.preventDefault();ocrFiles(imgs);}
+});
+qbox.addEventListener("dragover",e=>{if([...e.dataTransfer.types].includes("Files")){e.preventDefault();qbox.classList.add("is-drop");}});
+qbox.addEventListener("dragleave",()=>qbox.classList.remove("is-drop"));
+qbox.addEventListener("drop",e=>{qbox.classList.remove("is-drop");if(e.dataTransfer.files.length){e.preventDefault();ocrFiles(e.dataTransfer.files);}});
+const ocrFile=document.getElementById("ocrFile");
+document.getElementById("ocrBtn").onclick=()=>ocrFile.click();
+ocrFile.onchange=()=>{ocrFiles(ocrFile.files);ocrFile.value="";};
+
+/* ---------- 瀏覽全部任務（可依地圖篩選） ---------- */
+let bmap=store.get("tarkov.bmap")||"all";
+function inBrowseMap(q){
+  if(bmap==="all") return true;
+  if(bmap==="none") return !q.map_ids.length;
+  return q.map_ids.includes(bmap);
+}
+function renderBrowse(){
+  const inSet=new Set(current.filter(c=>c.who.includes(tab)).map(c=>c.q.id));   // 標出目前分頁的隊友有的任務
+  const count=f=>D.quests.filter(f).length;
+  const opts=[["all",t("all"),D.quests.length],...MAPS.map(m=>[m.id,mapName(m.id),count(q=>q.map_ids.includes(m.id))]),["none",t("anyMap"),count(q=>!q.map_ids.length)]];
+  if(!opts.some(o=>o[0]===bmap)) bmap="all";
+  document.getElementById("bfilter").innerHTML=opts.filter(o=>o[2]).map(([id,name,n])=>
+    `<button type="button" class="bf" data-bmap="${id}" aria-pressed="${id===bmap}">${esc(name)} <small>${n}</small></button>`).join("");
+  const by={};
+  D.quests.filter(inBrowseMap).forEach(q=>(by[q.trader]=by[q.trader]||[]).push(q));
+  document.getElementById("browseSum").textContent=t("browseSum",D.quests.length);
+  document.getElementById("browseBody").innerHTML=Object.keys(by).sort().map(tr=>`
+    <div class="bgroup"><div class="bgroup__t" style="color:${tcol(tr)}">${esc(trName(tr))}</div>
+    <div class="bgroup__list">${by[tr].map(q=>`<button type="button" class="bq${inSet.has(q.id)?" is-in":""}${hasPins(q)?"":" is-nomap"}" data-id="${q.id}" title="${esc((qAlt(q)?qAlt(q)+" · ":"")+qMaps(q))}${hasPins(q)?"":esc(t("noPinT"))}">${esc(qName(q))}</button>`).join("")}</div></div>`).join("")
+    +`<div class="dim">${t("browseNote")}</div>`;
+}
+document.getElementById("bfilter").addEventListener("click",e=>{
+  const b=e.target.closest(".bf"); if(!b) return;
+  bmap=b.dataset.bmap; store.set("tarkov.bmap",bmap); renderBrowse();
+});
+document.getElementById("browseBody").addEventListener("click",e=>{
+  const b=e.target.closest(".bq"); if(!b) return;
+  const q=D.quests.find(x=>x.id===b.dataset.id);
+  const lines=parseInput(qbox.value);
+  const i=lines.findIndex(l=>{const r=lookup(l);return r&&r.hits.length===1&&r.hits[0].id===q.id;});
+  if(i>=0) lines.splice(i,1); else lines.push(lineFor(q));
+  qbox.value=lines.join("\n"); run();
+});
+
+/* ---------- 地圖 ---------- */
+const svg=document.getElementById("pins");
+const routeLayer=mk("g",{},svg), exLayer=mk("g",{},svg), stopLayer=mk("g",{},svg), kmLayer=mk("g",{},svg), pinLayer=mk("g",{},svg);
+let pins=[], kms=[], exs=[];
+const EX_TYPE=x=>({pmc:"PMC",scav:"Scav",shared:t("exShared"),transit:t("exTransit")}[x]);
+const EXTRACTS=D.extracts||[];
+let showEx=store.get("tarkov.ex")!=="0";
+let exOn=new Set((store.get("tarkov.extypes")||"pmc,transit").split(",").filter(Boolean));
+const exVisible=e=>showEx&&(e.type==="shared"?(exOn.has("pmc")||exOn.has("scav")):exOn.has(e.type));
+// BTR：預設關；停靠站、路線可分開開關
+const BTRBY=Object.fromEntries((D.btr||[]).map(b=>[b.map,b]));
+const ROUTE_COLORS=["#B58BE0","#4FC3E8","#E86FB0","#A6D94F","#F2D25C"];
+let showBtr=store.get("tarkov.btr")==="1";
+let btrOn=new Set((store.get("tarkov.btrtypes")||"stops,routes").split(",").filter(Boolean));
+let stops=[], routes=[], infoEl=null;
+const mapimg=document.getElementById("mapimg");
+const MW=()=>MAPBY[curMap].width, MH=()=>MAPBY[curMap].height;
+const curKeyIds=()=>new Set(current.flatMap(c=>c.q.keys.map(k=>k.id)));
+
+function mapCounts(){
+  const cnt={};
+  current.forEach(c=>new Set(c.q.spots.filter(pinned).map(s=>s.map)).forEach(m=>cnt[m]=(cnt[m]||0)+1));
+  return cnt;
+}
+function renderMaps(){
+  const cnt=mapCounts();
+  document.getElementById("maps").innerHTML=MAPS.map(m=>
+    `<button class="mapbtn${cnt[m.id]?" has":""}" type="button" data-map="${m.id}" aria-pressed="${m.id===curMap}" title="${esc(cnt[m.id]?t("mapHas",cnt[m.id]):t("mapNo"))}">${esc(mapName(m.id))}${cnt[m.id]?`<b>${cnt[m.id]}</b>`:""}</button>`).join("");
+}
+document.getElementById("maps").addEventListener("click",e=>{const b=e.target.closest(".mapbtn");if(b&&b.dataset.map!==curMap)setMap(b.dataset.map);});
+
+function renderFloors(){
+  const m=MAPBY[curMap], keyIds=curKeyIds();
+  const used=new Set([...current.flatMap(c=>c.q.spots.filter(s=>pinned(s)&&s.map===curMap).map(s=>s.floor)),
+    ...D.keymarks.filter(k=>k.map===curMap&&keyIds.has(k.key)).map(k=>k.floor)]);
+  document.getElementById("floors").innerHTML=m.floors.map(f=>
+    `<button class="floor" type="button" data-floor="${f.key}" aria-pressed="${f.key===floor}">${esc(f.name)}${used.has(f.key)?'<span class="floor__dot"></span>':''}</button>`).join("");
+  return used;
+}
+function renderExtracts(){
+  exLayer.replaceChildren(); exs=[]; hideExInfo();
+  EXTRACTS.filter(e=>e.map===curMap).forEach(e=>{
+    const g=mk("g",{class:"ex ex--"+e.type},exLayer), inner=mk("g",{},g);
+    mk("rect",{x:-6.5,y:-6.5,width:13,height:13,rx:3,class:"ex__box"},inner);
+    mk("path",{d:"M-3.4 0 H3.4 M0.9 -2.6 L3.4 0 L0.9 2.6",class:"ex__art"},inner);
+    mk("text",{class:"ex__label",x:9,y:0},inner).textContent=E(e.name,e.name_en);
+    mk("title",{},g).textContent=`${E(e.name,e.name_en)}（${EX_TYPE(e.type)}・${flName(curMap,e.floor)}）`;
+    g.addEventListener("click",ev=>{ev.stopPropagation(); if(dragMoved) return; showExInfo(e,g);});
+    exs.push({el:g,e});
+  });
+}
+// 行駛方向：
+// ・每條路線往行進方向的右側偏移一點（像雙向車道），反方向的路線自然分成兩條線，同方向的疊在一起
+// ・沿線每隔一段放箭頭；附近已經有同方向箭頭就不再放（同方向的多條路線只留一個）
+// 偏移量與間距以螢幕像素計，縮放跨級距或選取改變時重排
+let arrowLevel=null;
+function laneOffset(p,d){
+  const out=[]; let nx=0, ny=0;
+  for(let i=0;i<p.length;i++){
+    const a=p[Math.max(i-1,0)], b=p[Math.min(i+1,p.length-1)];
+    const dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy);
+    if(L){nx=-dy/L; ny=dx/L;}                    // 螢幕座標 y 朝下：(-dy, dx) 是行進方向的右手邊
+    out.push([p[i][0]+nx*d, p[i][1]+ny*d]);
+  }
+  return out;
+}
+function layoutArrows(lw){
+  const gap=170*lw, near=gap*0.75, placed=[];
+  // 選取中的路線優先放箭頭，其次是沒被淡化的
+  const rank=x=>x.el.classList.contains("is-on")?0:x.el.classList.contains("is-dim")?2:1;
+  // 每條路線一條車道，依序排在行進方向右側（像地鐵路線圖），路口哪條轉彎、哪條直走才看得出來；
+  // 拉近時間距加大，蓋過原始路線座標本身幾個單位的誤差
+  const zf=Math.min(2.4,Math.max(1,k/3));
+  routes.forEach((x,i)=>{
+    x.pts=laneOffset(x.r.points,(3+i*4.2)*zf*lw);
+    x.el.setAttribute("points",x.pts.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" "));
+  });
+  [...routes].sort((a,b)=>rank(a)-rank(b)).forEach(x=>{
+    x.ar.replaceChildren(); x.arrows=[];
+    const p=x.pts; let next=gap*0.5, acc=0;
+    for(let i=1;i<p.length;i++){
+      const dx=p[i][0]-p[i-1][0], dy=p[i][1]-p[i-1][1], d=Math.hypot(dx,dy);
+      if(!d) continue;
+      while(next<=acc+d){
+        const f=(next-acc)/d, a=Math.atan2(dy,dx)*180/Math.PI, ax=p[i-1][0]+dx*f, ay=p[i-1][1]+dy*f;
+        const dup=placed.some(q=>Math.hypot(q.x-ax,q.y-ay)<near&&Math.abs(((a-q.a+540)%360)-180)<50);
+        if(!dup){
+          const el=mk("path",{d:"M-7 -6 L7.4 0 L-7 6 L-3.8 0 Z",fill:x.col},x.ar);
+          const ar={el,x:ax,y:ay,a}; x.arrows.push(ar); placed.push(ar);
+        }
+        next+=gap;
+      }
+      acc+=d;
+    }
+  });
+}
+const rcls=(x,c,on)=>{x.el.classList.toggle(c,on);x.ar.classList.toggle(c,on);};
+function renderBtr(){
+  routeLayer.replaceChildren(); stopLayer.replaceChildren(); stops=[]; routes=[]; arrowLevel=null;
+  const b=BTRBY[curMap]; if(!b) return;
+  b.routes.forEach((r,i)=>{
+    const col=ROUTE_COLORS[i%ROUTE_COLORS.length];
+    const el=mk("polyline",{class:"btr-route",points:r.points.map(p=>p.join(",")).join(" "),stroke:col},routeLayer);
+    mk("title",{},el).textContent=`${t("btrRoute")} ${lang==="en"?r.name_en:C(r.name)}`;
+    el.addEventListener("click",ev=>{ev.stopPropagation(); if(dragMoved) return; showRouteInfo(r,col,el);});
+    routes.push({el,r,col,ar:mk("g",{class:"btr-arrows"},routeLayer),arrows:[]});
+  });
+  b.stops.forEach(st=>{
+    const g=mk("g",{class:"bs"},stopLayer), inner=mk("g",{},g);
+    mk("rect",{x:-8,y:-5.5,width:16,height:11,rx:2.5,class:"bs__box"},inner);
+    mk("text",{class:"bs__t",x:0,y:.3},inner).textContent="BTR";
+    mk("text",{class:"bs__label",x:11,y:0},inner).textContent=E(st.name,st.name_en);
+    mk("title",{},g).textContent=`${t("btrStop")}：${E(st.name,st.name_en)}`;
+    g.addEventListener("click",ev=>{ev.stopPropagation(); if(dragMoved) return; showStopInfo(st,g);});
+    stops.push({el:g,st});
+  });
+}
+const routeName=r=>lang==="en"?r.name_en:C(r.name);
+const stopName=id=>{const st=(BTRBY[curMap]?.stops||[]).find(x=>x.id===id);return st?E(st.name,st.name_en):id;};
+function showStopInfo(st,g){
+  hideExInfo(); infoEl=g; g.classList.add("is-on");
+  const via=routes.filter(x=>x.r.stops.includes(st.id));
+  routes.forEach(x=>rcls(x,"is-dim",!via.includes(x))); arrowLevel=null; apply();
+  exinfo.style.borderLeftColor="var(--btr)";
+  exinfo.innerHTML=`<button type="button" aria-label="${esc(t("close"))}">×</button><span class="t" style="color:var(--btr)">${esc(t("btrStop"))}</span><b>${esc(E(st.name,st.name_en))}</b>`+
+    `<p>${esc(t("btrVia"))}${via.map(x=>`<span class="rt"><i style="background:${x.col}"></i>${esc(routeName(x.r))}</span>`).join("")||"—"}</p>`;
+  exinfo.hidden=false;
+}
+function showRouteInfo(r,col,el){
+  hideExInfo(); infoEl=el; el.classList.add("is-on");
+  routes.forEach(x=>rcls(x,"is-dim",x.el!==el)); arrowLevel=null; apply();
+  exinfo.style.borderLeftColor=col;
+  exinfo.innerHTML=`<button type="button" aria-label="${esc(t("close"))}">×</button><span class="t" style="color:${col}">${esc(t("btrRoute"))}</span><b>${esc(routeName(r))}</b>`+
+    `<p>${esc(t("btrSeq"))}${r.stops.map(id=>esc(stopName(id))).join(" → ")}${r.loop?" → "+esc(stopName(r.stops[0]))+esc(t("btrLoop")):""}</p>`;
+  exinfo.hidden=false;
+}
+const exinfo=document.getElementById("exinfo");
+function showExInfo(e,g){
+  hideExInfo(); infoEl=g;
+  exs.forEach(x=>x.el.classList.toggle("is-on",x.el===g));
+  const col=e.type==="scav"?"var(--ex-scav)":e.type==="transit"?"var(--ex-transit)":"var(--ex-pmc)";
+  exinfo.style.borderLeftColor=col;
+  exinfo.innerHTML=`<button type="button" aria-label="${esc(t("close"))}">×</button><span class="t" style="color:${col}">${EX_TYPE(e.type)} · ${esc(flName(curMap,e.floor))}</span><b>${esc(E(e.name,e.name_en))}</b><p>${esc(e.note?E(e.note,e.note_en):t("exNone"))}</p>`;
+  exinfo.hidden=false;
+}
+function hideExInfo(){
+  exinfo.hidden=true; infoEl=null;
+  exs.forEach(x=>x.el.classList.remove("is-on")); stops.forEach(x=>x.el.classList.remove("is-on"));
+  routes.forEach(x=>{rcls(x,"is-on",false);rcls(x,"is-dim",false);}); arrowLevel=null; apply();
+}
+exinfo.addEventListener("click",e=>{if(e.target.closest("button"))hideExInfo();});
+exinfo.addEventListener("pointerdown",e=>e.stopPropagation());
+
+function renderPins(){
+  renderExtracts(); renderBtr();
+  pinLayer.replaceChildren(); kmLayer.replaceChildren(); pins=[]; kms=[];
+  const keyIds=curKeyIds();
+  D.keymarks.filter(m=>m.map===curMap&&keyIds.has(m.key)).forEach(m=>{
+    const g=mk("g",{class:"km"},kmLayer), inner=mk("g",{},g);
+    if(m.type==="door"){
+      inner.setAttribute("transform","translate(9 -9)");
+      mk("rect",{x:-7,y:-7,width:14,height:14,rx:2.5,class:"km__bg"},inner);
+      mk("path",{d:"M-2.8 -1.2 A2.8 2.8 0 0 1 2.8 -1.2",class:"km__art"},inner);
+      mk("rect",{x:-3.8,y:-1.2,width:7.6,height:5.4,rx:1,class:"km__body"},inner);
+    }else{
+      mk("rect",{x:-6.5,y:-6.5,width:13,height:13,transform:"rotate(45)",class:"km__bg"},inner);
+      mk("circle",{cx:-1.8,cy:0,r:2,class:"km__art"},inner);
+      mk("path",{d:"M0.2 0 H4 M2.6 0 V1.8",class:"km__art"},inner);
+    }
+    const kn=keyInfo[m.key]?E(keyInfo[m.key].name,keyInfo[m.key].name_en):t("keyWord");
+    mk("title",{},g).textContent=`${m.type==="door"?t("kmDoor",kn):t("kmSpawn",kn)}（${flName(curMap,m.floor)}）`;
+    kms.push({el:g,m});
+  });
+  current.forEach((c,ci)=>{
+    const q=c.q, n=ci+1, col=tcol(q.trader);
+    q.spots.forEach(s=>{
+      if(!pinned(s)||s.map!==curMap) return;
+      const g=mk("g",{class:"pin"},pinLayer), inner=mk("g",{},g);
+      mk("circle",{r:13,class:"pin__ring"},inner);
+      if(s.kind==="spawn"){
+        mk("circle",{r:8.5,class:"pin__hollow",stroke:col},inner);
+        mk("text",{class:"pin__label",y:.5,fill:col},inner).textContent=n;
+      }else{
+        mk("circle",{r:9.5,class:"pin__disc",fill:col},inner);
+        mk("text",{class:"pin__label pin__label--solid",y:.5},inner).textContent=n;
+      }
+      const ft=mk("text",{class:"pin__ftag",x:12,y:13},inner); ft.textContent=flName(curMap,s.floor);
+      mk("title",{},g).textContent=`${n}. ${qName(q)} [${c.who.map(mateShort).join("/")}] — ${sTitle(s)}（${flName(curMap,s.floor)}）`;
+      g.addEventListener("click",e=>{e.stopPropagation(); if(dragMoved) return; select(q.id,true); if(s.floor!==floor) setFloor(s.floor);});   // 點別層的標點直接切到該層
+      pins.push({el:g,q,s,ft});
+    });
+  });
+  const empty=document.getElementById("empty");
+  if(!current.length){empty.textContent=t("emptyNone");empty.hidden=false;}
+  else if(!pins.length){
+    const other=Object.keys(mapCounts()).map(mapName).filter(Boolean);
+    const doneHid=current.some(c=>c.q.spots.some(x=>hasXY(x)&&spotDone(x)));
+    empty.textContent=other.length?t("emptyHere",mapName(curMap),other.join(t("sep"))):doneHid?t("emptyDone"):t("emptyAll");
+    empty.hidden=false;
+  }else empty.hidden=true;
+}
+function setMap(id){
+  curMap=id; const m=MAPBY[id]; store.set("tarkov.map",id);
+  svg.setAttribute("viewBox",`0 0 ${m.width} ${m.height}`);
+  document.getElementById("btrCtl").hidden=!BTRBY[id];
+  document.querySelectorAll(".mapbtn").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.map===id)));
+  renderPins();
+  const used=current.flatMap(c=>c.q.spots.filter(s=>pinned(s)&&s.map===id).map(s=>s.floor));
+  let f=floorByMap[id];
+  if(!f||!m.floors.some(x=>x.key===f)||(used.length&&!used.includes(f))){
+    f=(m.floors.some(x=>x.key==="1")&&(!used.length||used.includes("1")))?"1":(used[0]||(m.floors[0]&&m.floors[0].key));
+  }
+  floor=f; renderFloors(); fit(); setFloor(f);
+}
+function setFloor(f){
+  floor=f; floorByMap[curMap]=f;
+  const m=MAPBY[curMap], F=m.floors.find(x=>x.key===f)||m.floors[0];
+  if(F){ if(!mapimg.src.endsWith(F.file)) mapimg.src=F.file; }
+  document.getElementById("floorbadge").textContent=`${mapName(m.id)} · ${F?F.name:""}`;
+  document.querySelectorAll(".floor").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.floor===f)));
+  paint();
+}
+const vis=q=>onTraders.has(q.trader)&&(!keyOnly||q.keys.some(k=>k.kind==="req"));
+function paint(){
+  pins.forEach(p=>{
+    p.el.classList.toggle("is-hid",!vis(p.q));
+    const off=p.s.floor!==floor;
+    p.el.classList.toggle("is-off",off); p.ft.style.display=off?"":"none";
+    p.el.classList.toggle("is-on",p.q.id===sel);
+  });
+  exs.forEach(x=>{
+    x.el.classList.toggle("is-hid",!exVisible(x.e));
+    x.el.classList.toggle("is-off",x.e.floor!==floor);
+  });
+  const btrFloor=(BTRBY[curMap]||{}).floor;
+  stops.forEach(x=>{x.el.classList.toggle("is-hid",!(showBtr&&btrOn.has("stops")));x.el.classList.toggle("is-off",floor!==btrFloor);});
+  routes.forEach(x=>rcls(x,"is-hid",!(showBtr&&btrOn.has("routes"))));
+  if(!exinfo.hidden&&(!infoEl||infoEl.classList.contains("is-hid")))hideExInfo();
+  kms.forEach(k=>{
+    const used=current.some(c=>vis(c.q)&&c.q.keys.some(x=>x.id===k.m.key));
+    k.el.classList.toggle("is-hid",!used); k.el.classList.toggle("is-off",k.m.floor!==floor);
+  });
+  document.querySelectorAll(".q").forEach(el=>{
+    const q=current[el.dataset.i].q;
+    el.classList.toggle("is-hidden",!vis(q)); el.classList.toggle("is-on",q.id===sel);
+    el.classList.toggle("is-away",!inScope(q));
+  });
+  paintScope();
+  pins.filter(p=>p.q.id===sel).forEach(p=>pinLayer.appendChild(p.el));
+}
+document.getElementById("floors").addEventListener("click",e=>{const b=e.target.closest(".floor");if(b)setFloor(b.dataset.floor);});
+
+function renderTraders(){
+  const ts=[...new Set(current.map(c=>c.q.trader))];
+  document.getElementById("traders").innerHTML=`<span class="tl">${t("trader")}</span>`+(ts.length?ts.map(tr=>
+    `<button class="chip" type="button" data-trader="${esc(tr)}" aria-pressed="${onTraders.has(tr)}" style="color:${tcol(tr)}"><span class="chip__dot"></span>${esc(trName(tr))}</button>`).join(""):'<span class="dim">—</span>');
+}
+document.getElementById("traders").addEventListener("click",e=>{
+  const b=e.target.closest("[data-trader]"); if(!b) return;
+  const t=b.dataset.trader; onTraders.has(t)?onTraders.delete(t):onTraders.add(t);
+  b.setAttribute("aria-pressed",String(onTraders.has(t))); paint();
+});
+const exToggle=document.getElementById("exToggle"), exTypesEl=document.getElementById("exTypes");
+function syncExUI(){
+  exToggle.setAttribute("aria-pressed",String(showEx));
+  exTypesEl.classList.toggle("is-off",!showEx);
+  exTypesEl.querySelectorAll("[data-ex]").forEach(b=>b.setAttribute("aria-pressed",String(exOn.has(b.dataset.ex))));
+}
+exToggle.addEventListener("click",()=>{showEx=!showEx;store.set("tarkov.ex",showEx?"1":"0");syncExUI();paint();});
+exTypesEl.addEventListener("click",e=>{
+  const b=e.target.closest("[data-ex]"); if(!b) return;
+  const t=b.dataset.ex; exOn.has(t)?exOn.delete(t):exOn.add(t);
+  store.set("tarkov.extypes",[...exOn].join(",")); syncExUI(); paint();
+});
+syncExUI();
+const btrToggle=document.getElementById("btrToggle"), btrTypesEl=document.getElementById("btrTypes");
+function syncBtrUI(){
+  btrToggle.setAttribute("aria-pressed",String(showBtr));
+  btrTypesEl.classList.toggle("is-off",!showBtr);
+  btrTypesEl.querySelectorAll("[data-btr]").forEach(b=>b.setAttribute("aria-pressed",String(btrOn.has(b.dataset.btr))));
+}
+btrToggle.addEventListener("click",()=>{showBtr=!showBtr;store.set("tarkov.btr",showBtr?"1":"0");syncBtrUI();paint();});
+btrTypesEl.addEventListener("click",e=>{
+  const b=e.target.closest("[data-btr]"); if(!b) return;
+  const k=b.dataset.btr; btrOn.has(k)?btrOn.delete(k):btrOn.add(k);
+  store.set("tarkov.btrtypes",[...btrOn].join(",")); syncBtrUI(); paint();
+});
+syncBtrUI();
+const fk=document.getElementById("fKey");
+fk.addEventListener("click",()=>{keyOnly=!keyOnly;fk.setAttribute("aria-pressed",String(keyOnly));paint();});
+
+function select(id,scroll,force){
+  sel=(sel===id&&!force)?null:id;
+  if(sel){
+    const q=current.find(c=>c.q.id===sel).q, sp=q.spots.filter(pinned);
+    if(sp.length&&!sp.some(s=>s.map===curMap)) setMap(sp[0].map);
+    const here=sp.filter(s=>s.map===curMap);
+    if(here.length&&!here.some(s=>s.floor===floor)) setFloor(here[0].floor);
+  }
+  paint();
+  if(sel&&scroll){const i=current.findIndex(c=>c.q.id===sel);const r=document.getElementById("q"+i);if(r)r.scrollIntoView({block:"nearest",behavior:"smooth"});}
+}
+
+/* ---------- 任務卡 ---------- */
+const KIND=k=>({req:["is-key","🔑 ",""],opt:["is-key is-opt","🔑 ",t("opt")],hand:["is-hand",t("hand"),""]}[k]);
+function renderList(){
+  const list=document.getElementById("list");
+  list.innerHTML=current.map((c,i)=>{
+    const q=c.q, n=i+1;
+    const lock=q.keys.some(k=>k.kind==="req")?`<span class="q__lock">${t("lock")}</span>`:'';
+    const need=[
+      ...q.keys.map(k=>{const [cls,pre,suf]=KIND(k.kind);return `<span class="${cls}">${icon(k.id)}${pre}${esc(E(k.name,k.name_en))}${suf?`<small>${suf}</small>`:""}</span>`;}),
+      ...q.items.map(it=>`<span>${icon(it.id)}${esc(E(it.name,it.name_en))} ×${it.n}${it.fir?`<small>${t("fir")}</small>`:''}</span>`)
+    ].join("");
+    const multiMap=new Set(q.spots.filter(hasXY).map(s=>s.map)).size>1;
+    const hideSpot=s=>s.goal!=null&&q.stages&&stageOf(q,s.goal)>curStage(q)+1;   // 下一段以後的地點不列
+    const doneSp=[];                                    // 已完成目標的地點收進摺疊區
+    const spots=q.spots.map((s,si)=>{
+      if(hideSpot(s)) return "";
+      const title=sTitle(s)||(s.kind==="text"?t("guide"):"");
+      const where=hasXY(s)?((multiMap?mapName(s.map)+" · ":"")+flName(s.map,s.floor)):"";
+      const lk=spotLocked(s), sd=!lk&&spotDone(s);
+      const ft=pinned(s)?`<span class="ftag">${esc(where)}</span><button class="go" type="button" data-i="${i}" data-s="${si}">${t("locate")}</button>`
+        :lk?`<span class="ftag ftag--lock">${t("lockedTag")}</span>`
+        :hasXY(s)?`<span class="ftag">${esc(where)}</span><span class="ftag ftag--done">${t("goalDoneTag")}</span>`:"";
+      const th=s.images.length?`<div class="thumbs">${s.images.map((im,j)=>`<button class="thumb" type="button" data-i="${i}" data-s="${si}" data-j="${j}" aria-label="${esc(t("enlarge"))}"><img src="${im.replace(/^img\//,"img/t/")}" alt="" loading="lazy"></button>`).join("")}</div>`:"";
+      const html=`<div class="spot${sd?" is-done":""}${lk?" is-locked":""}"><div class="spot__h"><span class="spot__t${s.kind==="spawn"?" is-spawn":""}">${esc(title)}</span>${ft}</div>${s.note?`<p class="spot__n">${esc(E(s.note,s.note_en))}</p>`:""}${th}</div>`;
+      if(sd){doneSp.push(html);return "";}
+      return html;
+    }).join("");
+    const doneFold=doneSp.length?`<details class="spots-done" data-done-spots="${q.id}"${openDone.has(q.id)?" open":""}><summary>${esc(t("doneSpots",doneSp.length))}</summary><div class="spots-done__list">${doneSp.join("")}</div></details>`:"";
+    const queryNote=![q.name,q.name_cn,q.name_en].filter(Boolean).some(x=>norm(x)===norm(c.query.replace(/\s*#[0-9a-f]{6,24}$/i,"")))?`<span class="q__query">${esc(t("queried",c.query))}</span>`:"";
+    const ticks=q.goals.length&&!(lang==="en"&&q.goals_en&&q.goals_en.length&&q.goals_en.length!==q.goals.length);   // 和 goalList 一樣：有勾選框才顯示進度
+    const prog=ticks?`<span class="q__prog" title="${esc(t("progT"))}">${q.goals.filter((g,gi)=>goalDone(q,gi)).length}/${q.goals.length}</span>`:"";
+    return `<article class="q${qMapSet(q).size?"":" is-any"}${COLS.has(q.id)?" is-col":""}" id="q${i}" data-i="${i}" data-id="${q.id}" style="--trader:${tcol(q.trader)}">
+      <div class="q__top"><button type="button" class="qcol" aria-label="${esc(t("colT"))}" title="${esc(t("colT"))}">▾</button><span class="q__num">${String(n).padStart(2,"0")}</span>
+        <h3 class="q__name"><a href="${esc(lang==="en"?q.wiki:q.url)}" target="_blank" rel="noopener" title="${esc(t("wikiT"))}">${esc(qName(q))}</a></h3>${prog}
+        <span class="q__who" title="${esc(t("whoT",c.who.map(mateName)))}">${esc(c.who.map(mateShort).join("/"))}</span>
+        <span class="q__trader">${esc(trName(q.trader))}${q.ll?" · "+esc(q.ll):""}</span>${lock}<span class="q__any">${t("anyMapTag")}</span>
+        <button class="q__done" type="button" data-done="${i}" title="${esc(t("doneT"))}">${t("done")}</button>
+        <a class="q__src" href="${esc(lang==="en"?q.url:q.wiki)}" target="_blank" rel="noopener" title="${esc(t("srcT"))}">${t("src")}</a></div>
+      <div class="q__sub">${qAlt(q)?`<span class="q__en" lang="${lang==="en"?"zh-Hant":"en"}">${esc(qAlt(q))}</span>`:""}<span class="q__maps">${esc(qMaps(q))}</span>${queryNote}</div>
+      <div class="q__body">
+        <div class="row"><span class="k">${t("kGoal")}</span><div class="v">${goalList(q,i)}</div></div>
+        ${need?`<div class="row"><span class="k">${t("kNeed")}</span><div class="v need">${need}</div></div>`:""}
+        ${q.choices&&q.choices.length?`<div class="row"><span class="k">${t("kGear")}</span><details class="v choices"><summary>${t("choices",q.choices.length)}</summary><p>${listEn(q.choices,q.choices_en).map(esc).join(t("sep"))}</p></details></div>`:""}
+        ${spots||doneFold?`<div class="row"><span class="k">${t("kWhere")}</span><div class="v spots">${doneFold}${spots}</div></div>`:`<div class="row"><span class="k">${t("kWhere")}</span><p class="v dim">${t("noSpots")}</p></div>`}
+        ${q.tips.length?`<div class="row"><span class="k">${t("kTips")}</span><ul class="v tips">${listEn(q.tips,q.tips_en).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:""}
+        ${q.warn?`<div class="row"><span class="k">${t("kNote")}</span><p class="v warn">${esc(E(q.warn,q.warn_en))}</p></div>`:""}
+      </div></article>`;
+  }).join("");
+  syncColAll();
+}
+// 任務卡收合：記在 localStorage（任務 id）；選中的任務由 CSS 強制展開
+const COLS=new Set((()=>{try{return JSON.parse(store.get("tarkov.col")||"[]");}catch(e){return [];}})());
+const saveCols=()=>store.set("tarkov.col",JSON.stringify([...COLS]));
+const colAllBtn=document.getElementById("colAll");
+function syncColAll(){
+  const qs=current.map(c=>c.q.id);
+  colAllBtn.hidden=!qs.length;
+  colAllBtn.textContent=t(qs.length&&qs.every(id=>COLS.has(id))?"expAll":"colAll");
+}
+colAllBtn.addEventListener("click",()=>{
+  const qs=current.map(c=>c.q.id), all=qs.every(id=>COLS.has(id));
+  qs.forEach(id=>all?COLS.delete(id):COLS.add(id)); saveCols();
+  document.querySelectorAll("#list .q").forEach(el=>el.classList.toggle("is-col",COLS.has(el.dataset.id)));
+  syncColAll();
+});
+// 未解鎖的下一段：目標多於 3 個時只列第一個和最後一個，中間摺疊（可展開；展開狀態在重畫後保留）
+const openMid=new Set(), openDone=new Set();
+function stageGoals(q,i,txt,a,b,st,item){
+  const all=txt.slice(a,b).map((g,j)=>item(g,a+j));
+  if(st!=="lock"||all.length<=3) return all.join("");
+  const key=q.id+":"+a, mid=all.slice(1,-1);
+  return all[0]+`<li class="gmid"><details data-mid="${key}"${openMid.has(key)?" open":""}><summary>${esc(t("midMore",mid.length))}</summary><ul class="goals">${mid.join("")}</ul></details></li>`+all[all.length-1];
+}
+// 目標清單：每一項可以點一下標記完成／取消。英文模式下 Fandom 的目標和原站對不起來（項數不同）時，照舊只列出英文目標
+function goalList(q,i){
+  const en=lang==="en"&&q.goals_en&&q.goals_en.length;
+  if(en&&q.goals_en.length!==q.goals.length) return `<ul>${q.goals_en.map(g=>`<li>${esc(g)}</li>`).join("")}</ul>`;
+  const txt=en?q.goals_en:q.goals.map(C);
+  const item=(g,gi)=>{const on=goalDone(q,gi), lk=goalLocked(q,gi);
+    return `<li><button type="button" class="goal${on&&!lk?" is-done":""}${lk?" is-locked":""}" data-goal="${i}:${gi}" aria-pressed="${on&&!lk}"${lk?` disabled title="${esc(t("lockedT"))}"`:` title="${esc(t(on?"goalUndoT":"goalDoT"))}"`}><span class="goal__box" aria-hidden="true"></span><span class="goal__t">${esc(g)}</span></button></li>`;};
+  if(!q.stages) return `<ul class="goals">${txt.map(item).join("")}</ul>`;
+  const cur=curStage(q), more=q.stages.length-cur-2;      // 未解鎖的段落只列出下一段，其餘只顯示還剩幾段
+  return q.stages.map((_,k)=>{if(k>cur+1) return "";
+    const [a,b]=stageRange(q,k), st=k<cur?"done":k===cur?"cur":"lock";
+    return `<div class="gstage gstage--${st}"><div class="gstage__h">${esc(t("stage",k+1,q.stages.length))}${st==="done"?` <span class="gstage__s">${t("stageDone")}</span>`:st==="lock"?` <span class="gstage__s">${t("stageLock")}</span>`:""}</div><ul class="goals">${stageGoals(q,i,txt,a,b,st,item)}</ul></div>`;}).join("")
+    +(more>0?`<div class="gstage gstage--lock"><div class="gstage__h">${esc(t("stageMore",more))}</div></div>`:"");
+}
+// 標記目標完成後：重畫任務卡和地圖標點，地圖的位置、縮放和清單的捲動位置都不變
+function refreshGoals(qi){
+  const list=document.getElementById("list"), sx=scrollX, sy=scrollY, st=list.scrollTop;
+  renderList(); list.scrollTop=st; scrollTo(sx,sy);
+  renderMaps(); renderPins(); renderFloors(); paint(); apply();
+}
+// 完成：把搜尋框裡對到這個任務的那一行拿掉後重新查詢。
+// 一行對到好幾個任務（例如只打「大動作」）時，換成其餘任務的名稱，不會連帶刪掉別的任務。
+// 寫回搜尋框的名稱：有同名任務時加上「 #代號」，才不會又對到兩個
+function lineFor(q){const n=qName(q), r=lookup(n);return r&&r.hits.length===1&&r.hits[0].id===q.id?n:`${n} #${q.id.slice(-6)}`;}
+// 完成會從每個隊友的清單裡都拿掉
+function doneQuest(q){
+  team[tab]=qbox.value;
+  for(const k of TEAM){
+    const out=[];
+    for(const l of parseInput(team[k])){
+      const r=lookup(l);
+      if(r&&r.hits.some(h=>h.id===q.id)) out.push(...r.hits.filter(h=>h.id!==q.id).map(lineFor));
+      else out.push(l);
+    }
+    if(out.join("\n")!==parseInput(team[k]).join("\n")) team[k]=out.join("\n");
+  }
+  qbox.value=team[tab]; run();
+}
+document.getElementById("list").addEventListener("toggle",e=>{
+  const d=e.target; if(!d.dataset) return;
+  if(d.dataset.mid) d.open?openMid.add(d.dataset.mid):openMid.delete(d.dataset.mid);
+  if(d.dataset.doneSpots) d.open?openDone.add(d.dataset.doneSpots):openDone.delete(d.dataset.doneSpots);
+},true);
+document.getElementById("list").addEventListener("click",e=>{
+  const dn=e.target.closest("[data-done]");
+  if(dn){doneQuest(current[dn.dataset.done].q);return;}
+  const top=e.target.closest(".q__top");
+  if(top&&!e.target.closest("a,button:not(.qcol)")){
+    const el=top.closest(".q"), id=el.dataset.id;
+    if(el.classList.contains("is-on")&&COLS.has(id)) COLS.delete(id);   // 選中時是強制展開的，點一下就取消收合
+    else COLS.has(id)?COLS.delete(id):COLS.add(id);
+    saveCols(); el.classList.toggle("is-col",COLS.has(id)); syncColAll(); return;
+  }
+  const gb=e.target.closest("[data-goal]");
+  if(gb){const [qi,gi]=gb.dataset.goal.split(":").map(Number);toggleGoal(current[qi].q,gi);refreshGoals(qi);
+    const nb=document.querySelector(`[data-goal="${qi}:${gi}"]`); if(nb) nb.focus({preventScroll:true}); return;}
+  const go=e.target.closest(".go");
+  if(go){const q=current[go.dataset.i].q;select(q.id,false,true);focusSpot(q.spots[go.dataset.s]);
+    if(innerWidth<=1080)document.getElementById("vp").scrollIntoView({block:"center",behavior:"smooth"});return;}
+  const th=e.target.closest(".thumb");
+  if(th) openLB(current[th.dataset.i].q,+th.dataset.s,+th.dataset.j);
+});
+
+/* ---------- 攜入／攜出清單、只看當前地圖 ---------- */
+// 任務牽涉的地圖：任務地圖 + 有座標的地點 + 攜入／攜出物品的地圖；空的是不限地圖
+const qMapSet=q=>q._maps||(q._maps=new Set([...q.map_ids,...q.spots.filter(hasXY).map(s=>s.map),
+  ...(q.carry_in||[]).concat(q.carry_out||[]).flatMap(i=>i.maps)].filter(m=>MAPBY[m])));
+let hereOnly=store.get("tarkov.here")==="1";
+// 只看當前地圖：有地圖的任務要包含當前地圖；不限地圖的任務照樣列出（排到最後、標「不限地圖」）
+const inScope=q=>!hereOnly||!qMapSet(q).size||qMapSet(q).has(curMap);
+let CD={}; try{CD=JSON.parse(store.get("tarkov.carry")||"{}")||{};}catch(e){CD={};}
+const hereBtn=document.getElementById("hereOnly");
+function paintScope(){
+  document.getElementById("listcol").classList.toggle("is-here",hereOnly);
+  hereBtn.setAttribute("aria-pressed",String(hereOnly));
+  hereBtn.textContent=hereOnly&&curMap?t("hereOn",mapName(curMap)):t("hereOff");
+  const n=current.filter(c=>inScope(c.q)).length;
+  document.getElementById("listhead").textContent=!current.length?t("listEmpty")
+    :hereOnly&&!n?t("hereEmpty",mapName(curMap)):t("listhead",n);
+  renderCarry();
+}
+hereBtn.addEventListener("click",()=>{hereOnly=!hereOnly;store.set("tarkov.here",hereOnly?"1":"0");paint();});
+const CKIND={key:["tag--req","tagReq"],opt_key:["tag--opt","tagOpt"],mark:["tag--opt","kMark"],plant:["tag--opt","kPlant"],use:["tag--opt","kUse"]};
+function carryRows(dir,field){
+  const by=new Map();
+  current.forEach(c=>{const q=c.q; if(!vis(q)||!inScope(q)) return;
+    (q[field]||[]).forEach(it=>{
+      if(hereOnly&&it.maps.length&&!it.maps.includes(curMap)) return;
+      let r=by.get(it.id);
+      if(!r){r={id:it.id,name:it.name,name_en:it.name_en,n:0,kind:it.kind,maps:new Set(),qs:[]};by.set(it.id,r);}
+      r.n+=it.n; it.maps.forEach(m=>{if(MAPBY[m])r.maps.add(m);}); if(!r.qs.includes(q)) r.qs.push(q);
+      if(it.kind==="key") r.kind="key";
+    });});
+  const rank=r=>(CD[dir+":"+r.id]?10:0)+(r.kind==="key"?0:r.kind==="opt_key"?1:2);
+  return [...by.values()].sort((a,b)=>rank(a)-rank(b));
+}
+// 攜入只顯示鑰匙（必須／可選的鑰匙都算）
+let carryKeysOnly=store.get("tarkov.carryKeys")==="1";
+const carryKeysBtn=document.getElementById("carryKeys");
+carryKeysBtn.addEventListener("click",e=>{
+  e.preventDefault();   // 按鈕在 summary 裡，不要順便開關摺疊
+  carryKeysOnly=!carryKeysOnly; store.set("tarkov.carryKeys",carryKeysOnly?"1":"0"); renderCarry();
+});
+function renderCarry(){
+  carryKeysBtn.setAttribute("aria-pressed",String(carryKeysOnly));
+  [["in","carry_in","carryIn"],["out","carry_out","carryOut"]].forEach(([dir,field,id])=>{
+    const all=carryRows(dir,field), sec=document.getElementById(id);
+    sec.hidden=!all.length; if(!all.length) return;
+    const rows=dir==="in"&&carryKeysOnly?all.filter(r=>r.kind==="key"||r.kind==="opt_key"):all;
+    document.getElementById(id+"T").textContent=t(id,rows.length);
+    if(!rows.length){document.getElementById(id+"List").innerHTML=`<li class="carry__none">${t("carryNoKeys")}</li>`;return;}
+    const anyDone=rows.some(r=>CD[dir+":"+r.id]);
+    document.getElementById(id+"List").innerHTML=rows.map(r=>{
+      const on=!!CD[dir+":"+r.id], kd=CKIND[r.kind];
+      const maps=!hereOnly&&r.maps.size?`<span class="ci__m">${esc([...r.maps].map(mapName).join(t("sep")))}</span>`:"";
+      return `<li class="ci${on?" is-done":""}"><button type="button" class="ci__box" data-carry="${dir}:${r.id}" aria-pressed="${on}" title="${esc(t(on?"carryUndoT":"carryDoT"))}" aria-label="${esc(E(r.name,r.name_en))}"></button>${icon(r.id)||'<i class="ci__ph"></i>'}<span class="ci__n">${esc(E(r.name,r.name_en))}</span>${r.n>1?`<span class="ci__x">×${r.n}</span>`:""}${kd?`<span class="tag ${kd[0]}">${t(kd[1])}</span>`:""}${maps}
+        <span class="ci__qs">${r.qs.map(q=>`<button type="button" class="ci__q" data-cq="${q.id}" title="${esc(t("carryQT"))}">${esc(qName(q))}</button>`).join("")}</span></li>`;
+    }).join("")+(anyDone?`<li><button type="button" class="btn carry__clr" data-cclear="${dir}">${t("carryClear")}</button></li>`:"");
+  });
+}
+document.getElementById("listcol").addEventListener("click",e=>{
+  const b=e.target.closest("[data-carry]");
+  if(b){const k=b.dataset.carry; CD[k]?delete CD[k]:CD[k]=1; store.set("tarkov.carry",JSON.stringify(CD)); renderCarry(); return;}
+  const cl=e.target.closest("[data-cclear]");
+  if(cl){Object.keys(CD).filter(k=>k.startsWith(cl.dataset.cclear+":")).forEach(k=>delete CD[k]); store.set("tarkov.carry",JSON.stringify(CD)); renderCarry(); return;}
+  const cq=e.target.closest("[data-cq]");
+  if(cq) select(cq.dataset.cq,true,true);
+});
+
+/* ---------- 鑰匙清單 ---------- */
+function renderKeys(){
+  const ids=[...curKeyIds()];
+  document.getElementById("keysSec").hidden=!ids.length;
+  const tagOf={req:["tag--req",t("tagReq")],opt:["tag--opt",t("tagOpt")],hand:["tag--hand",t("tagHand")]};
+  document.getElementById("keyrows").innerHTML=ids.map(id=>{
+    const k=keyInfo[id]; if(!k) return "";
+    const uses=k.quests.filter(x=>current.some(c=>c.q.id===x.id));
+    const marks=D.keymarks.map((m,i)=>[m,i]).filter(([m])=>m.key===id&&MAPBY[m.map]);
+    const btns=marks.map(([m,i])=>`<button class="go" type="button" data-km="${i}">${m.type==="door"?t("door"):t("spawn")} ${esc(mapName(m.map))} ${esc(flName(m.map,m.floor))} ▸</button>`).join(" ");
+    const notes=marks.filter(([m])=>m.note).map(([m])=>`<div class="dim">${m.type==="spawn"?t("spawnNote"):""}${esc(E(m.note,m.note_en))}</div>`).join("");
+    const usesN=k.uses||"—";
+    return `<tr><td><div class="kn">${icon(id)}<span>${esc(E(k.name,k.name_en))}</span></div></td>
+      <td>${uses.map(u=>`<span class="tag ${tagOf[u.kind][0]}">${tagOf[u.kind][1]}</span>${esc(QBY[u.id]?qName(QBY[u.id]):C(u.name))}`).join("<br>")}</td>
+      <td>${esc(E(k.desc,k.desc_en))}${notes}</td>
+      <td class="num"><span class="${usesN==="1"?"warnnum":""}">${esc(C(usesN))}</span></td>
+      <td class="num">${esc((lang==="en"&&/無法/.test(k.flea||"")?t("noFlea"):C(k.flea))||"—")}</td><td>${btns||'<span class="dim">—</span>'}</td></tr>`;
+  }).join("");
+}
+document.getElementById("keyrows").addEventListener("click",e=>{
+  const b=e.target.closest("[data-km]"); if(!b) return;
+  const m=D.keymarks[+b.dataset.km];
+  if(m.map!==curMap) setMap(m.map);
+  setFloor(m.floor); focusXY(m.x,m.y);
+  document.getElementById("vp").scrollIntoView({block:"center",behavior:"smooth"});
+});
+
+/* ---------- 平移 / 縮放 ---------- */
+const vp=document.getElementById("vp"), stage=document.getElementById("stage");
+vp.querySelectorAll(".ov").forEach(o=>o.addEventListener("pointerdown",e=>e.stopPropagation()));   // 浮在地圖上的按鈕不觸發拖曳
+let k=1,tx=0,ty=0,baseW=1;
+function fit(){
+  if(!curMap) return;
+  const r=vp.getBoundingClientRect(), sc=Math.min(r.width/MW(),r.height/MH());
+  baseW=MW()*sc; stage.style.width=baseW+"px"; k=1; tx=(r.width-baseW)/2; ty=(r.height-MH()*sc)/2; apply();
+}
+function apply(){
+  if(!curMap) return;
+  stage.style.transform=`translate(${tx}px,${ty}px) scale(${k})`;
+  // will-change 只在操作中開：一直開著會把圖層以 1× 點陣化再放大，縮放後圖標變糊
+  stage.classList.add("is-moving");clearTimeout(apply.t);apply.t=setTimeout(()=>stage.classList.remove("is-moving"),150);
+  const s=(MW()/baseW)/k*Math.min(1.25,0.85+0.08*k);
+  pins.forEach(p=>p.el.setAttribute("transform",`translate(${p.s.x} ${p.s.y}) scale(${s})`));
+  kms.forEach(m=>m.el.setAttribute("transform",`translate(${m.m.x} ${m.m.y}) scale(${s})`));
+  const se=s*0.92;
+  // 名稱標籤拉近時放大得比圖標多（最多 3 倍），才看得清楚寫什麼
+  svg.style.setProperty("--lf",(Math.min(3,1+0.25*(k-1))/Math.min(1.25,0.85+0.08*k)).toFixed(3));
+  exs.forEach(x=>x.el.setAttribute("transform",`translate(${x.e.x} ${x.e.y}) scale(${se})`));
+  stops.forEach(x=>x.el.setAttribute("transform",`translate(${x.st.x} ${x.st.y}) scale(${se})`));
+  const lw=(MW()/baseW)/k;
+  routes.forEach(x=>x.el.setAttribute("stroke-width",(x.el.classList.contains("is-on")?4.2:2.8)*lw));
+  const lvl=Math.round(Math.log2(k)*2);
+  if(routes.length&&lvl!==arrowLevel){arrowLevel=lvl; layoutArrows(lw);}
+  routes.forEach(x=>{const sc=lw*(x.el.classList.contains("is-on")?1.25:1);
+    x.arrows.forEach(a=>a.el.setAttribute("transform",`translate(${a.x} ${a.y}) rotate(${a.a}) scale(${sc})`));});
+}
+function clamp(){
+  const r=vp.getBoundingClientRect(), w=baseW*k, h=baseW*(MH()/MW())*k;
+  tx=w<=r.width?(r.width-w)/2:Math.min(0,Math.max(r.width-w,tx));
+  ty=h<=r.height?(r.height-h)/2:Math.min(0,Math.max(r.height-h,ty));
+}
+function zoomAt(cx,cy,f){const nk=Math.max(1,Math.min(12,k*f));if(nk===k)return;tx=cx-(cx-tx)*(nk/k);ty=cy-(cy-ty)*(nk/k);k=nk;clamp();apply();}
+function focusXY(x,y){const r=vp.getBoundingClientRect();k=Math.max(k,3.2);const sc=baseW/MW();tx=r.width/2-x*sc*k;ty=r.height/2-y*sc*k;clamp();apply();}
+function focusSpot(s){if(!s||!pinned(s))return;if(s.map!==curMap)setMap(s.map);if(s.floor!==floor)setFloor(s.floor);focusXY(s.x,s.y);}
+vp.addEventListener("wheel",e=>{
+  e.preventDefault();
+  if(e.altKey){const F=MAPBY[curMap].floors,i=F.findIndex(f=>f.key===floor),j=Math.max(0,Math.min(F.length-1,i+(e.deltaY<0?1:-1)));if(j!==i)setFloor(F[j].key);return;}
+  const r=vp.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,e.deltaY<0?1.2:1/1.2);
+},{passive:false});
+// 拖曳平移；手機上兩指縮放
+let drag=null,dragMoved=false,pinch=null;
+const ptrs=new Map();
+const dist=()=>{const [a,b]=[...ptrs.values()];return Math.hypot(a.x-b.x,a.y-b.y);};
+const mid=()=>{const [a,b]=[...ptrs.values()],r=vp.getBoundingClientRect();return {x:(a.x+b.x)/2-r.left,y:(a.y+b.y)/2-r.top};};
+vp.addEventListener("pointerdown",e=>{
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2){pinch={d:dist()};drag=null;dragMoved=true;}
+  else if(ptrs.size===1){drag={x:e.clientX,y:e.clientY,tx,ty};dragMoved=false;}
+});
+vp.addEventListener("pointermove",e=>{
+  if(!ptrs.has(e.pointerId))return;
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&ptrs.size===2){const d=dist(),m=mid();zoomAt(m.x,m.y,d/pinch.d);pinch.d=d;return;}
+  if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(!dragMoved&&Math.abs(dx)+Math.abs(dy)>4){dragMoved=true;vp.setPointerCapture(e.pointerId);vp.classList.add("is-drag");}
+  if(dragMoved){tx=drag.tx+dx;ty=drag.ty+dy;clamp();apply();}
+});
+const endDrag=e=>{
+  ptrs.delete(e.pointerId);
+  if(ptrs.size<2)pinch=null;
+  if(ptrs.size===1){const p=[...ptrs.values()][0];drag={x:p.x,y:p.y,tx,ty};return;}
+  drag=null;vp.classList.remove("is-drag");setTimeout(()=>{dragMoved=false},0);
+};
+vp.addEventListener("pointerup",endDrag);vp.addEventListener("pointercancel",endDrag);
+document.getElementById("zIn").onclick=()=>{const r=vp.getBoundingClientRect();zoomAt(r.width/2,r.height/2,1.4);};
+document.getElementById("zOut").onclick=()=>{const r=vp.getBoundingClientRect();zoomAt(r.width/2,r.height/2,1/1.4);};
+document.getElementById("zReset").onclick=fit;
+addEventListener("resize",fit);
+
+/* ---------- 截圖燈箱 ---------- */
+const lb=document.getElementById("lb"),lbimg=document.getElementById("lbimg"),lbcap=document.getElementById("lbcap");
+let lbList=[],lbI=0;
+function openLB(q,si,j){
+  lbList=q.spots.flatMap(s=>s.images.map(src=>({src,cap:`${qName(q)} — ${sTitle(s)}`})));
+  lbI=q.spots.slice(0,si).reduce((a,s)=>a+s.images.length,0)+j; showLB(); if(!lb.open)lb.showModal();
+}
+function showLB(){const it=lbList[lbI];lbimg.src=it.src;lbcap.textContent=`${it.cap}　${lbI+1} / ${lbList.length}`;
+  const one=lbList.length<2; lbL.hidden=one; lbR.hidden=one;}
+const lbprev=document.getElementById("lbprev"), lbnext=document.getElementById("lbnext");
+lbprev.onclick=()=>{lbI=(lbI-1+lbList.length)%lbList.length;showLB();};
+lbnext.onclick=()=>{lbI=(lbI+1)%lbList.length;showLB();};
+lbL.onclick=()=>lbprev.onclick(); lbR.onclick=()=>lbnext.onclick();
+document.getElementById("lbclose").onclick=()=>lb.close();
+lb.addEventListener("click",e=>{if(e.target===lb)lb.close();});
+lb.addEventListener("keydown",e=>{if(e.key==="ArrowRight")lbnext.click();if(e.key==="ArrowLeft")lbprev.click();});
+
+/* ---------- 串起來 ---------- */
+const DEFAULT_MAP=(MAPS.find(m=>m.name_cn==="塔科夫街区")||MAPS[0]).id;
+function render(){
+  renderBrowse(); renderTraders(); renderList(); renderKeys();
+  const cnt=mapCounts();
+  let target=curMap||store.get("tarkov.map")||DEFAULT_MAP;
+  if(!MAPBY[target]) target=DEFAULT_MAP;
+  if(!cnt[target]){                                     // 目前地圖沒有標點：切到標點最多的地圖
+    const best=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
+    if(best) target=best[0];
+  }
+  curMap=target; renderMaps(); setMap(target);
+}
+
+function applyLang(){
+  document.documentElement.lang={tw:"zh-Hant",cn:"zh-Hans",en:"en"}[lang];
+  document.title=t("doctitle");
+  document.querySelectorAll("[data-t]").forEach(el=>{el.innerHTML=t(el.dataset.t);});
+  document.querySelectorAll("[data-t-ph]").forEach(el=>el.setAttribute("placeholder",t(el.dataset.tPh)));
+  document.querySelectorAll("[data-t-aria]").forEach(el=>el.setAttribute("aria-label",t(el.dataset.tAria)));
+  document.querySelectorAll("[data-t-alt]").forEach(el=>el.setAttribute("alt",t(el.dataset.tAlt)));
+  document.querySelectorAll("[data-t-title]").forEach(el=>el.setAttribute("title",t(el.dataset.tTitle)));
+  document.querySelector("[data-t=enNote]").hidden=!t("enNote");
+  document.querySelectorAll("#lang [data-lang]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===lang)));
+  document.getElementById("meta").textContent=t("meta",D.quests.length,MAPS.length,D.built);
+}
+document.getElementById("lang").addEventListener("click",e=>{
+  const b=e.target.closest("[data-lang]"); if(!b||b.dataset.lang===lang) return;
+  lang=b.dataset.lang; store.set("tarkov.lang",lang); applyLang(); run(false);
+});
+applyLang();
+
+document.getElementById("form").addEventListener("submit",e=>{e.preventDefault();run();});
+qbox.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();run();}});
+document.getElementById("clear").onclick=()=>{qbox.value="";run();qbox.focus();};   // 只清空目前分頁
+
+// 網址 #A=…&B=…（舊格式 #q=… 當成隊友A）優先；否則用存的；舊版只有一份清單（tarkov.q）時放到隊友A
+const hash=location.hash.slice(1), fromHash={};
+if(/^q=/.test(hash)) fromHash.A=decodeURIComponent(hash.slice(2));
+else hash.split("&").forEach(p=>{const m=p.match(/^([A-E])=(.*)$/);if(m)fromHash[m[1]]=decodeURIComponent(m[2]);});
+if(Object.keys(fromHash).length){team={};for(const k in fromHash)team[k]=fromHash[k].split(",").join("\n");if(!fromHash[tab])tab=Object.keys(fromHash)[0];}
+else if(!team||typeof team!=="object") team={A:store.get("tarkov.q")??"美味香腸\n獵人之路 大動作\n芭蕾舞者\n人口普查\n老賴\n審計"};
+TEAM.forEach(k=>{if(typeof team[k]!=="string")team[k]="";});
+qbox.value=team[tab];
+mapimg.addEventListener("load",()=>{ if(baseW<=1) fit(); });
+run(false);
+})();
+</script>
+</body>
+</html>
